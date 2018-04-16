@@ -103,7 +103,18 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public void sleep(int value) {
-        testCtrl.sleep(value);
+        try {
+            Thread.sleep(value);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void exit() {
+        testCtrl.shotDown();
     }
 
 }

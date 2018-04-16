@@ -1,12 +1,26 @@
 package com.aveco.Gstreamer.ctrl.action;
 
+import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+
+
 public class Exit implements CtrlAction {
+
+    private IVideoPlayerCtrl ctrl;
+
+
+    public Exit(IVideoPlayerCtrl ctrl) {
+        super();
+        this.ctrl = ctrl;
+    }
+
 
     @Override
     public void doIt() {
+        ctrl.exit();
         System.exit(0);
 
     }
+
 
     @Override
     public String help() {

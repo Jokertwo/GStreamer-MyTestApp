@@ -29,4 +29,6 @@ public interface IVideoPlayerCtrl {
     
     void sleep(int value);
     
+    void exit();
+    
 }

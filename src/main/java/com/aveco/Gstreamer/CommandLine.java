@@ -41,7 +41,7 @@ public class CommandLine implements Runnable {
         while (true) {
             commandLine = sc.nextLine().trim();
             // presed enter
-            if (commandLine.isEmpty()){
+            if (commandLine.isEmpty()) {
                 continue;
             }
             String commands[] = commandLine.split(" ");
@@ -90,7 +90,7 @@ public class CommandLine implements Runnable {
         actions.put("time", new Time(ctrl));
         actions.put("ncf", new ActualFrame(ctrl));
         actions.put("vfr", new FrameRate(ctrl));
-        actions.put("exit", new Exit());
+        actions.put("exit", new Exit(ctrl));
         actions.put("runTest", new RunTest(ctrl));
         actions.put("tmc", new TimeCode(ctrl));
         actions.put("slp", new Sleep(ctrl));
