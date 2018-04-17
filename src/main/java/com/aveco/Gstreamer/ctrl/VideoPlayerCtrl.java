@@ -1,6 +1,8 @@
 package com.aveco.Gstreamer.ctrl;
 
 import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.freedesktop.gstreamer.ClockTime;
 import org.freedesktop.gstreamer.Format;
 import org.freedesktop.gstreamer.elements.PlayBin;
@@ -11,7 +13,8 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     private PlayBin pb2;
     private long sec = 1000000000;
-    ITestControler testCtrl;
+    private ITestControler testCtrl;
+    private static final Logger logger = LogManager.getLogger();
 
 
     public VideoPlayerCtrl(IMyGVideoPlayer videoPlayer, ITestControler testCtrl) {
@@ -24,39 +27,42 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
     @Override
     public void play() {
         pb2.play();
-
+        logger.debug("Play video.");
     }
 
 
     @Override
     public void pause() {
         pb2.pause();
+        logger.debug("Pause video");
     }
 
 
     @Override
     public void rewindToStart() {
         pb2.seek(ClockTime.ZERO);
+        logger.debug("Video was rewind to begin");
     }
 
 
     @Override
     public void rewindToEnd() {
         pb2.seek(pb2.queryDuration(Format.TIME), TimeUnit.NANOSECONDS);
-
+        logger.debug("Video was rewind to end");
     }
 
 
     @Override
     public void rewindOneBack() {
         pb2.seek(pb2.queryPosition(Format.TIME) - sec, TimeUnit.NANOSECONDS);
+        logger.debug("Video was rewind one sec back");
     }
 
 
     @Override
     public void rewindOneFront() {
         pb2.seek(pb2.queryPosition(Format.TIME) + sec, TimeUnit.NANOSECONDS);
-
+        logger.debug("Video was rewind one sec forward");
     }
 
 
@@ -67,6 +73,7 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
         System.out.println("Query Position 'percent' > " + pb2.queryPosition(Format.PERCENT));
         System.out.println("Query Position 'undefined' > " + pb2.queryPosition(Format.UNDEFINED));
         System.out.println("Query Position 'time' > " + pb2.queryPosition(Format.TIME));
+        logger.debug("Were printed information to console about time");
 
     }
 
@@ -74,35 +81,42 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
     @Override
     public void state() {
         System.out.println(pb2.getState());
+        logger.debug("Video state: " + pb2.getState());
     }
 
 
     @Override
     public void frameRate() {
         System.out.println(testCtrl.frameRate());
+        logger.debug("Frame rate: " + testCtrl.frameRate());
     }
 
 
     @Override
     public void actualFrame() {
         System.out.println(testCtrl.getActualFrame());
+        logger.debug("Actual frame: " + testCtrl.getActualFrame());
     }
 
 
     @Override
     public void timeCode() {
         System.out.println(testCtrl.timeCode());
+        logger.debug("Time code: " + testCtrl.timeCode());
     }
 
 
     @Override
     public void runTest() {
-        testCtrl.runTest();
+        logger.trace("Start of tests");
+        testCtrl.runTests();
+
     }
 
 
     @Override
     public void sleep(int value) {
+        logger.trace(Thread.currentThread().getName() + "will be slept for " + value + " ms");
         try {
             Thread.sleep(value);
         } catch (InterruptedException e) {
@@ -110,11 +124,20 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
             e.printStackTrace();
         }
     }
+    
+    
 
 
     @Override
     public void exit() {
+        logger.info("App will be close");
         testCtrl.shotDown();
+    }
+
+
+    @Override
+    public void stopTest() {
+        testCtrl.stopTest();      
     }
 
 }

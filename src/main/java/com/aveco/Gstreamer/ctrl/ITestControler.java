@@ -2,8 +2,9 @@ package com.aveco.Gstreamer.ctrl;
 
 public interface ITestControler {
 
-    void runTest();
+    void runTests();
 
+    void stopTest();
 
     void shotDown();
 
@@ -27,5 +28,7 @@ public interface ITestControler {
 
 
     String actualTimeP();
+    
+    String queryDuration();
 
 }

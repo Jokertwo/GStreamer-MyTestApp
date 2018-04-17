@@ -3,6 +3,8 @@ package com.aveco.Gstreamer;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 import com.aveco.Gstreamer.ctrl.action.ActualFrame;
 import com.aveco.Gstreamer.ctrl.action.CtrlAction;
@@ -17,11 +19,14 @@ import com.aveco.Gstreamer.ctrl.action.RunTest;
 import com.aveco.Gstreamer.ctrl.action.Sleep;
 import com.aveco.Gstreamer.ctrl.action.Start;
 import com.aveco.Gstreamer.ctrl.action.State;
+import com.aveco.Gstreamer.ctrl.action.StopTest;
 import com.aveco.Gstreamer.ctrl.action.Time;
 import com.aveco.Gstreamer.ctrl.action.TimeCode;
 
 
 public class CommandLine implements Runnable {
+
+    private static final Logger logger = LogManager.getLogger();
 
     private final String help = "man";
     private Map<String, CtrlAction> actions;
@@ -36,6 +41,7 @@ public class CommandLine implements Runnable {
 
     @Override
     public void run() {
+        logger.info("Thread for command line begin run");
         Thread.currentThread().setName("Command-console");
         String commandLine;
         while (true) {
@@ -56,7 +62,7 @@ public class CommandLine implements Runnable {
                 if (actions.containsKey(command)) {
                     actions.get(command).doIt();
                 } else {
-                    unknownCoomand();
+                    unknownCoomand(command);
                 }
             }
 
@@ -72,8 +78,9 @@ public class CommandLine implements Runnable {
     }
 
 
-    private void unknownCoomand() {
-        System.out.println("Unknown command!");
+    private void unknownCoomand(String command) {
+        logger.trace("Unknown command '" + command + "'");
+        System.out.println("Unknown command '" + command + "'");
         System.out.println("For help type '" + help + "'");
     }
 
@@ -94,6 +101,8 @@ public class CommandLine implements Runnable {
         actions.put("runTest", new RunTest(ctrl));
         actions.put("tmc", new TimeCode(ctrl));
         actions.put("slp", new Sleep(ctrl));
+        actions.put("stopTest", new StopTest(ctrl));
+        logger.trace("Actions of command lind were inicialized");
     }
 
 }

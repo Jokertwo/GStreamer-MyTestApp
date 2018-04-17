@@ -1,9 +1,28 @@
 package com.aveco.Gstreamer.testRunnable;
 
-public abstract class AbstractTest implements Runnable{
+public abstract class AbstractTest implements Runnable {
 
-    
-   protected void sleep(long time) {
+    public static final String PATH = "testResolut/";
+    private boolean run = true;
+
+    private Object lock = new Object();
+
+
+    public void stopTest() {
+        synchronized (lock) {
+            run = false;
+        }
+    }
+
+
+    public boolean isRunnig() {
+        synchronized (lock) {
+            return run;
+        }
+    }
+
+
+    protected void sleep(long time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
@@ -11,4 +30,5 @@ public abstract class AbstractTest implements Runnable{
             e.printStackTrace();
         }
     }
+
 }

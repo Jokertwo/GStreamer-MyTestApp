@@ -3,11 +3,12 @@ package com.aveco.Gstreamer.ctrl.action;
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
 
-public class ActualFrame implements CtrlAction {
+public class StopTest implements CtrlAction {
+
     private IVideoPlayerCtrl ctrl;
 
 
-    public ActualFrame(IVideoPlayerCtrl ctrl) {
+    public StopTest(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -15,14 +16,13 @@ public class ActualFrame implements CtrlAction {
 
     @Override
     public void doIt() {
-        ctrl.actualFrame();
+        ctrl.stopTest();
     }
 
 
     @Override
     public String help() {
-        return "Print number of actual frame";
-
+        return "Stop all tests";
     }
 
 }

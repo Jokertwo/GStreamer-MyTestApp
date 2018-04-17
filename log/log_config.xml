@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" packages="com.aveco.Gstreamer.ctrl.log">
+
+    <Properties>
+        <Property name="separator">${sys:line.separator}</Property>
+        <Property name="patern">[%-4level - %c{1}.%M()] - %msg${separator}</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="obrazovka" target="SYSTEM_OUT">
+            <PatternLayout pattern="${patern}" />
+        </Console>
+        <TextArea name="jtextarea-log" maxLines="100">
+            <PatternLayout pattern="${patern}" />
+        </TextArea>
+
+    </Appenders>
+
+    <Loggers>
+
+        <Root level="debug">
+            <AppenderRef ref="jtextarea-log" />
+        </Root>
+
+    </Loggers>
+</Configuration>

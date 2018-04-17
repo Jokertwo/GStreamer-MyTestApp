@@ -5,6 +5,8 @@ import java.net.URI;
 import javax.swing.JPanel;
 import org.freedesktop.gstreamer.Bus.EOS;
 import org.freedesktop.gstreamer.Bus.ERROR;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.freedesktop.gstreamer.GstObject;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
@@ -13,6 +15,8 @@ import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 @SuppressWarnings("serial")
 public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
 
+    private static final Logger logger = LogManager.getLogger();
+
     private SimpleVideoComponent vCmp;
 //    private VideoComponent vCmp;
     private PlayBin playBin;
@@ -20,11 +24,12 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
 
 
     public MyGVideoPlayer(URI uri) {
-
         playBin = new PlayBin("VideoPlayer");
+        logger.trace("PlayBin was created");
 //        playBin = new PlayBin2("VideoPlayer");
 
         vCmp = new SimpleVideoComponent();
+        logger.trace("SimpleVideoComponent was created");
 //        vCmp = new VideoComponent();
 
         playBin.setVideoSink(vCmp.getElement());
@@ -37,8 +42,10 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
             @Override
             public void endOfStream(GstObject source) {
                 playBin.pause();
+                logger.debug("End of video -> video was paused");
             }
         });
+        logger.trace("EOS listener was add to playBin");
 
         playBin.getBus().connect(new ERROR() {
 
@@ -49,6 +56,7 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
                 System.out.println("Message: " + message);
             }
         });
+        logger.trace("ERROR listener was add to playBin");
     }
 
 
@@ -71,6 +79,5 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
 
 //    public PlayBin2 getPlayBin() {
 //        return playBin;
-//    }
 
 }

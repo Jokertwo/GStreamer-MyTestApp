@@ -31,4 +31,6 @@ public interface IVideoPlayerCtrl {
     
     void exit();
     
+    void stopTest();
+    
 }
