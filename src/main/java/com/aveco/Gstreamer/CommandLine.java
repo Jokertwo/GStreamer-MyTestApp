@@ -3,10 +3,11 @@ package com.aveco.Gstreamer;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 import com.aveco.Gstreamer.ctrl.action.ActualFrame;
+import com.aveco.Gstreamer.ctrl.action.BufferInfo;
 import com.aveco.Gstreamer.ctrl.action.CtrlAction;
 import com.aveco.Gstreamer.ctrl.action.End;
 import com.aveco.Gstreamer.ctrl.action.Exit;
@@ -26,7 +27,7 @@ import com.aveco.Gstreamer.ctrl.action.TimeCode;
 
 public class CommandLine implements Runnable {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(CommandLine.class);
 
     private final String help = "man";
     private Map<String, CtrlAction> actions;
@@ -102,6 +103,7 @@ public class CommandLine implements Runnable {
         actions.put("tmc", new TimeCode(ctrl));
         actions.put("slp", new Sleep(ctrl));
         actions.put("stopTest", new StopTest(ctrl));
+        actions.put("buf", new BufferInfo(ctrl));
         logger.trace("Actions of command lind were inicialized");
     }
 

@@ -1,26 +1,29 @@
 package com.aveco.Gstreamer.ctrl;
 
 import java.util.concurrent.TimeUnit;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.freedesktop.gstreamer.ClockTime;
 import org.freedesktop.gstreamer.Format;
 import org.freedesktop.gstreamer.elements.PlayBin;
+import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.gui.IMyGVideoPlayer;
 
 
 public class VideoPlayerCtrl implements IVideoPlayerCtrl {
+    public static final Logger logger = LoggerFactory.getLogger(VideoPlayerCtrl.class);
 
     private PlayBin pb2;
     private long sec = 1000000000;
     private ITestControler testCtrl;
-    private static final Logger logger = LogManager.getLogger();
+    private SimpleVideoComponent simpleVC;
 
 
     public VideoPlayerCtrl(IMyGVideoPlayer videoPlayer, ITestControler testCtrl) {
         super();
         this.pb2 = videoPlayer.getPlayBin();
         this.testCtrl = testCtrl;
+        this.simpleVC = videoPlayer.getSimpleVideoCompoment();
     }
 
 
@@ -47,7 +50,7 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public void rewindToEnd() {
-        pb2.seek(pb2.queryDuration(Format.TIME), TimeUnit.NANOSECONDS);
+        pb2.seek(testCtrl.getVideoEnd(), TimeUnit.NANOSECONDS);
         logger.debug("Video was rewind to end");
     }
 
@@ -88,27 +91,23 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
     @Override
     public void frameRate() {
         System.out.println(testCtrl.frameRate());
-        logger.debug("Frame rate: " + testCtrl.frameRate());
     }
 
 
     @Override
     public void actualFrame() {
         System.out.println(testCtrl.getActualFrame());
-        logger.debug("Actual frame: " + testCtrl.getActualFrame());
     }
 
 
     @Override
     public void timeCode() {
         System.out.println(testCtrl.timeCode());
-        logger.debug("Time code: " + testCtrl.timeCode());
     }
 
 
     @Override
     public void runTest() {
-        logger.trace("Start of tests");
         testCtrl.runTests();
 
     }
@@ -124,8 +123,6 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
             e.printStackTrace();
         }
     }
-    
-    
 
 
     @Override
@@ -137,7 +134,13 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public void stopTest() {
-        testCtrl.stopTest();      
+        testCtrl.stopTest();
+    }
+
+
+    @Override
+    public SimpleVideoComponent getSimpleVideoComponent() {
+        return simpleVC;
     }
 
 }

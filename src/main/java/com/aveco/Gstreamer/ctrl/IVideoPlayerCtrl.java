@@ -1,5 +1,7 @@
 package com.aveco.Gstreamer.ctrl;
 
+import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
+
 public interface IVideoPlayerCtrl {
 
     
@@ -32,5 +34,7 @@ public interface IVideoPlayerCtrl {
     void exit();
     
     void stopTest();
+    
+    SimpleVideoComponent getSimpleVideoComponent();
     
 }

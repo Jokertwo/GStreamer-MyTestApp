@@ -1,0 +1,22 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%date | %-5level | %logger[%thread] - %message%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="textArea" class="com.aveco.Gstreamer.log.JTextAreaAppender">
+        <encoder> 
+            <pattern>%date | %-5level | %logger[%thread] - %message%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+
+        <appender-ref ref="textArea" />
+    </root>
+
+
+</configuration>

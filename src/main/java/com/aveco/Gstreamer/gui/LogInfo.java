@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import com.aveco.Gstreamer.ctrl.log.JTextAreaAppender;
+import com.aveco.Gstreamer.log.JTextAreaAppender;
 
 
 @SuppressWarnings("serial")
@@ -29,8 +29,8 @@ public class LogInfo extends JPanel {
         JScrollPane jConsoleScroll = new JScrollPane(jLoggingConsole);
         jConsoleScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // Subscribe the text area to JTextAreaAppender
-        JTextAreaAppender.addTextArea(jLoggingConsole);
+//         Subscribe the text area to JTextAreaAppender
+        JTextAreaAppender.setTextArea(jLoggingConsole);
         return jConsoleScroll;
     }
 }

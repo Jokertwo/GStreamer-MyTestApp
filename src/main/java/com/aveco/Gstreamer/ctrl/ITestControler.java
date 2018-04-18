@@ -4,7 +4,9 @@ public interface ITestControler {
 
     void runTests();
 
+
     void stopTest();
+
 
     void shotDown();
 
@@ -28,7 +30,11 @@ public interface ITestControler {
 
 
     String actualTimeP();
-    
+
+
     String queryDuration();
+
+
+    long getVideoEnd();
 
 }

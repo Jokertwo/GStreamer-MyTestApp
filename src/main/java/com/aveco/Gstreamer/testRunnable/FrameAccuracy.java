@@ -9,9 +9,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.freedesktop.gstreamer.elements.PlayBin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.ctrl.ITestControler;
 
 
@@ -25,7 +25,7 @@ public class FrameAccuracy extends AbstractTest {
 
     private static final String FOLDER_NAME = PATH + "frameAccuracy";
 
-    public static final Logger logger = LogManager.getLogger();
+    public static final Logger logger = LoggerFactory.getLogger(FrameAccuracy.class);
 
 
     public FrameAccuracy(ITestControler tCtrl, PlayBin playBin, JComponent panel) {
@@ -73,6 +73,7 @@ public class FrameAccuracy extends AbstractTest {
         g.drawString(tCtrl.actualTimeT(), bi.getWidth() / 2 + 10, yPosition * 4);
         g.drawString(tCtrl.actualTimeP(), bi.getWidth() / 2 + 10, yPosition * 5);
         g.drawString(tCtrl.queryDuration(), bi.getWidth() / 2 + 10, yPosition * 6);
+        g.drawString(tCtrl.actualTimeT(), bi.getWidth() / 2 + 10, yPosition * 7);
         g.dispose();
         try {
             ImageIO.write(bi, "png", new File(FOLDER_NAME + "/img" + String.valueOf(counter) + ".png"));
