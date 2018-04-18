@@ -1,13 +1,12 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
+public class Sleep implements CtrlAction {
 
-public class Time implements CtrlAction {
     private IVideoPlayerCtrl ctrl;
-
-
-    public Time(IVideoPlayerCtrl ctrl) {
+    
+    public Sleep(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -15,15 +14,13 @@ public class Time implements CtrlAction {
 
     @Override
     public void doIt() {
-        ctrl.time();
-
+        ctrl.sleep(500);
     }
 
 
     @Override
     public String help() {
-        // TODO Auto-generated method stub
-        return "Info about time";
+       return "Pause between executing the command (500ms)";
     }
 
 }

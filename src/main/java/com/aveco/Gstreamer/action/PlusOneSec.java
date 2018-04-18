@@ -1,30 +1,26 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
-public class Start implements CtrlAction {
+public class PlusOneSec implements CtrlAction {
 
+    
     private IVideoPlayerCtrl ctrl;
     
-    
-    public Start(IVideoPlayerCtrl ctrl) {
+    public PlusOneSec(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
 
-
     @Override
     public void doIt() {
-        ctrl.rewindToStart();
+        ctrl.rewindOneFront();
     }
-
 
     @Override
     public String help() {
         // TODO Auto-generated method stub
-        return "Rewind to begin";
+        return "Rewind one sec forward";
     }
-    
-    
 
 }

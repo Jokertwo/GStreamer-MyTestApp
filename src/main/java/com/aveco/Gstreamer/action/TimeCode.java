@@ -1,14 +1,11 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
-public class End implements CtrlAction {
-
-    
+public class TimeCode implements CtrlAction {
     private IVideoPlayerCtrl ctrl; 
     
-    
-    public End(IVideoPlayerCtrl ctrl) {
+    public TimeCode(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -16,14 +13,14 @@ public class End implements CtrlAction {
 
     @Override
     public void doIt() {
-        ctrl.rewindToEnd();
+        ctrl.timeCode();
     }
 
 
     @Override
     public String help() {
         // TODO Auto-generated method stub
-        return "Rewind to end";
+        return "Print actual timeCode";
     }
 
 }

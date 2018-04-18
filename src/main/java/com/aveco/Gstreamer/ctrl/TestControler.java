@@ -9,6 +9,7 @@ import org.freedesktop.gstreamer.ClockTime;
 import org.freedesktop.gstreamer.Format;
 import org.freedesktop.gstreamer.Sample;
 import org.freedesktop.gstreamer.elements.PlayBin;
+import org.freedesktop.gstreamer.elements.PlayBin.VIDEO_TAGS_CHANGED;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.freedesktop.gstreamer.query.SeekingQuery;
 import org.slf4j.Logger;

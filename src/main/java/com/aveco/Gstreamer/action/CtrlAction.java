@@ -1,4 +1,4 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 public interface CtrlAction {
 

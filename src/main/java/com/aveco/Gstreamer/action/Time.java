@@ -1,13 +1,13 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
 
-public class ActualFrame implements CtrlAction {
+public class Time implements CtrlAction {
     private IVideoPlayerCtrl ctrl;
 
 
-    public ActualFrame(IVideoPlayerCtrl ctrl) {
+    public Time(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -15,14 +15,15 @@ public class ActualFrame implements CtrlAction {
 
     @Override
     public void doIt() {
-        ctrl.actualFrame();
+        ctrl.time();
+
     }
 
 
     @Override
     public String help() {
-        return "Print number of actual frame";
-
+        // TODO Auto-generated method stub
+        return "Info about time";
     }
 
 }

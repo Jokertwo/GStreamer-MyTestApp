@@ -5,15 +5,12 @@ import java.net.URI;
 import javax.swing.JPanel;
 import org.freedesktop.gstreamer.Bus.EOS;
 import org.freedesktop.gstreamer.Bus.ERROR;
-import org.freedesktop.gstreamer.Bus.INFO;
 import org.freedesktop.gstreamer.Bus.SEGMENT_START;
-import org.freedesktop.gstreamer.Bus.TAG;
 import org.freedesktop.gstreamer.Element;
 import org.freedesktop.gstreamer.ElementFactory;
 import org.freedesktop.gstreamer.Format;
 import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.GstObject;
-import org.freedesktop.gstreamer.TagList;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.slf4j.Logger;
@@ -66,28 +63,6 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
             });
             logger.trace("EOS listener was add to playBin");
             Gst.getExecutor().execute(() -> {
-//                playBin.getBus().connect(new TAG() {
-//
-//                    @Override
-//                    public void tagsFound(GstObject source, TagList tagList) {
-//                        for (String tagName : tagList.getTagNames()) {
-//                            for (Object tagData : tagList.getValues(tagName)) {
-//                                System.out.printf("[%s]=%s\n", tagName, tagData);
-//                            }
-//                            System.out.println();
-//                        }
-//
-//                    }
-//                });
-                
-                playBin.getBus().connect(new INFO() {
-                    
-                    @Override
-                    public void infoMessage(GstObject source, int code, String message) {
-                        System.out.println();
-                        
-                    }
-                });
 
                 playBin.getBus().connect(new ERROR() {
 
@@ -108,9 +83,9 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
 
                     }
                 });
-                playBin.pause();
+                
             });
-
+            playBin.pause();
         } else {
             logger.error("GStreamer is not inicialized");
         }

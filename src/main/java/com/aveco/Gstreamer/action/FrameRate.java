@@ -1,13 +1,13 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
 
-public class State implements CtrlAction {
+public class FrameRate implements CtrlAction {
     private IVideoPlayerCtrl ctrl;
 
 
-    public State(IVideoPlayerCtrl ctrl) {
+    public FrameRate(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -15,14 +15,14 @@ public class State implements CtrlAction {
 
     @Override
     public void doIt() {
-        ctrl.state();
+        ctrl.frameRate();
     }
 
 
     @Override
     public String help() {
         // TODO Auto-generated method stub
-        return "Actual state";
+        return "Video frame rate";
     }
 
 }

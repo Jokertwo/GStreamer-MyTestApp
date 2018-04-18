@@ -1,26 +1,28 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
-public class Pause implements CtrlAction {
 
-    
+public class State implements CtrlAction {
     private IVideoPlayerCtrl ctrl;
-    
-    public Pause(IVideoPlayerCtrl ctrl) {
+
+
+    public State(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
 
+
     @Override
     public void doIt() {
-        ctrl.pause();
+        ctrl.state();
     }
+
 
     @Override
     public String help() {
         // TODO Auto-generated method stub
-        return "Pause video";
+        return "Actual state";
     }
 
 }

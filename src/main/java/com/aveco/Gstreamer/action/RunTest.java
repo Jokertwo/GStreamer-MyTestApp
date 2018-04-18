@@ -1,14 +1,14 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
 
-public class Play implements CtrlAction {
+public class RunTest implements CtrlAction {
 
     private IVideoPlayerCtrl ctrl;
 
 
-    public Play(IVideoPlayerCtrl ctrl) {
+    public RunTest(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -16,14 +16,14 @@ public class Play implements CtrlAction {
 
     @Override
     public void doIt() {
-        ctrl.play();
+        ctrl.runTest();
     }
 
 
     @Override
     public String help() {
         // TODO Auto-generated method stub
-        return "Play video";
+        return "Start test";
     }
 
 }

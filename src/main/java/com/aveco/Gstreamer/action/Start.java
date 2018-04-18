@@ -1,14 +1,13 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
-
-public class Exit implements CtrlAction {
+public class Start implements CtrlAction {
 
     private IVideoPlayerCtrl ctrl;
-
-
-    public Exit(IVideoPlayerCtrl ctrl) {
+    
+    
+    public Start(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -16,16 +15,16 @@ public class Exit implements CtrlAction {
 
     @Override
     public void doIt() {
-        ctrl.exit();
-        System.exit(0);
-
+        ctrl.rewindToStart();
     }
 
 
     @Override
     public String help() {
         // TODO Auto-generated method stub
-        return "Close application";
+        return "Rewind to begin";
     }
+    
+    
 
 }

@@ -140,6 +140,7 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public SimpleVideoComponent getSimpleVideoComponent() {
+        pb2.getSinks();
         return simpleVC;
     }
 

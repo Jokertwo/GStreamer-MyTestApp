@@ -1,14 +1,14 @@
-package com.aveco.Gstreamer.ctrl.action;
+package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
+public class End implements CtrlAction {
 
-public class MinusOneSec implements CtrlAction {
-
-    private IVideoPlayerCtrl ctrl;
-
-
-    public MinusOneSec(IVideoPlayerCtrl ctrl) {
+    
+    private IVideoPlayerCtrl ctrl; 
+    
+    
+    public End(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -16,14 +16,14 @@ public class MinusOneSec implements CtrlAction {
 
     @Override
     public void doIt() {
-        ctrl.rewindOneBack();
+        ctrl.rewindToEnd();
     }
 
 
     @Override
     public String help() {
         // TODO Auto-generated method stub
-        return "Rewind one sec back";
+        return "Rewind to end";
     }
 
 }
