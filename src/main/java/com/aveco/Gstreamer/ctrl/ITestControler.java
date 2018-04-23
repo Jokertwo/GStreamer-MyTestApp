@@ -11,6 +11,9 @@ public interface ITestControler {
     void shotDown();
 
 
+    void step(int count);
+
+
     String frameRate();
 
 
@@ -29,7 +32,7 @@ public interface ITestControler {
     String actualTimeT();
 
 
-    String actualTimeP();
+    String presentationTimeStemp();
 
 
     String queryDuration();

@@ -19,6 +19,7 @@ import com.aveco.Gstreamer.action.RunTest;
 import com.aveco.Gstreamer.action.Sleep;
 import com.aveco.Gstreamer.action.Start;
 import com.aveco.Gstreamer.action.State;
+import com.aveco.Gstreamer.action.StepEventAction;
 import com.aveco.Gstreamer.action.StopTest;
 import com.aveco.Gstreamer.action.Time;
 import com.aveco.Gstreamer.action.TimeCode;
@@ -99,11 +100,12 @@ public class CommandLine implements Runnable {
         actions.put("ncf", new ActualFrame(ctrl));
         actions.put("vfr", new FrameRate(ctrl));
         actions.put("exit", new Exit(ctrl));
-        actions.put("runTest", new RunTest(ctrl));
+        actions.put("runT", new RunTest(ctrl));
         actions.put("tmc", new TimeCode(ctrl));
         actions.put("slp", new Sleep(ctrl));
-        actions.put("stopTest", new StopTest(ctrl));
+        actions.put("stopT", new StopTest(ctrl));
         actions.put("buf", new BufferInfo(ctrl));
+        actions.put("step", new StepEventAction(ctrl));
         logger.trace("Actions of command lind were inicialized");
     }
 

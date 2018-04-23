@@ -5,12 +5,13 @@ import java.net.URI;
 import javax.swing.JPanel;
 import org.freedesktop.gstreamer.Bus.EOS;
 import org.freedesktop.gstreamer.Bus.ERROR;
-import org.freedesktop.gstreamer.Bus.SEGMENT_START;
-import org.freedesktop.gstreamer.Element;
-import org.freedesktop.gstreamer.ElementFactory;
-import org.freedesktop.gstreamer.Format;
+import org.freedesktop.gstreamer.Event;
 import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.GstObject;
+import org.freedesktop.gstreamer.Pad;
+import org.freedesktop.gstreamer.Pad.EVENT_PROBE;
+import org.freedesktop.gstreamer.PadProbeReturn;
+import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.slf4j.Logger;
@@ -23,36 +24,25 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
     private static final Logger logger = LoggerFactory.getLogger(MyGVideoPlayer.class);
 
     private SimpleVideoComponent vCmp;
-//    private VideoComponent vCmp;
     private PlayBin playBin;
-//    private PlayBin2 playBin;
-
-
-    public MyGVideoPlayer() {
-        playBin = new PlayBin("test");
-        Element e1 = ElementFactory.make("fakesrc", "source");
-        Element e2 = ElementFactory.make("fakesink", "sink");
-        playBin.addMany(e1, e2);
-    }
 
 
     public MyGVideoPlayer(URI uri) {
+
         if (Gst.isInitialized()) {
 
             playBin = new PlayBin("VideoPlayer");
             logger.trace("PlayBin was created");
 
-//        playBin = new PlayBin2("VideoPlayer");
-
             vCmp = new SimpleVideoComponent();
             logger.trace("SimpleVideoComponent was created");
-//        vCmp = new VideoComponent();
 
             playBin.setVideoSink(vCmp.getElement());
             playBin.setURI(uri);
-
+            
             setLayout(new BorderLayout());
             add(vCmp, BorderLayout.CENTER);
+
 
             playBin.getBus().connect(new EOS() {
                 @Override
@@ -62,30 +52,19 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
                 }
             });
             logger.trace("EOS listener was add to playBin");
-            Gst.getExecutor().execute(() -> {
 
-                playBin.getBus().connect(new ERROR() {
+            playBin.getBus().connect(new ERROR() {
 
-                    @Override
-                    public void errorMessage(GstObject source, int code, String message) {
-                        System.out.println("GstObject: " + source);
-                        System.out.println("Error code: " + code);
-                        System.out.println("Message: " + message);
-                    }
-                });
-                logger.trace("ERROR listener was add to playBin");
-
-                playBin.getBus().connect(new SEGMENT_START() {
-
-                    @Override
-                    public void segmentStart(GstObject source, Format format, long position) {
-                        System.out.println();
-
-                    }
-                });
-                
+                @Override
+                public void errorMessage(GstObject source, int code, String message) {
+                    System.out.println("GstObject: " + source);
+                    System.out.println("Error code: " + code);
+                    System.out.println("Message: " + message);
+                }
             });
-            playBin.pause();
+            logger.trace("ERROR listener was add to playBin");
+
+            playBin.setState(State.PAUSED);
         } else {
             logger.error("GStreamer is not inicialized");
         }
@@ -108,8 +87,4 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
     public JPanel getPanel() {
         return this;
     }
-
-//    public PlayBin2 getPlayBin() {
-//        return playBin;
-
 }

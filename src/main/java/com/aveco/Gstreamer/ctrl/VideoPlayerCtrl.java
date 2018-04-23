@@ -1,8 +1,10 @@
 package com.aveco.Gstreamer.ctrl;
 
 import java.util.concurrent.TimeUnit;
+import org.freedesktop.gstreamer.Buffer;
 import org.freedesktop.gstreamer.ClockTime;
 import org.freedesktop.gstreamer.Format;
+import org.freedesktop.gstreamer.Sample;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.slf4j.Logger;
@@ -71,38 +73,35 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public void time() {
-        System.out.println("Query Position 'buffer' > " + pb2.queryPosition(Format.BUFFERS));
-        System.out.println("Query Position 'default' > " + pb2.queryPosition(Format.DEFAULT));
-        System.out.println("Query Position 'percent' > " + pb2.queryPosition(Format.PERCENT));
-        System.out.println("Query Position 'undefined' > " + pb2.queryPosition(Format.UNDEFINED));
-        System.out.println("Query Position 'time' > " + pb2.queryPosition(Format.TIME));
-        logger.debug("Were printed information to console about time");
-
+        logger.info("Query Position 'buffer' > " + pb2.queryPosition(Format.BUFFERS));
+        logger.info("Query Position 'default' > " + pb2.queryPosition(Format.DEFAULT));
+        logger.info("Query Position 'percent' > " + pb2.queryPosition(Format.PERCENT));
+        logger.info("Query Position 'undefined' > " + pb2.queryPosition(Format.UNDEFINED));
+        logger.info("Query Position 'time' > " + pb2.queryPosition(Format.TIME));
     }
 
 
     @Override
     public void state() {
-        System.out.println(pb2.getState());
-        logger.debug("Video state: " + pb2.getState());
+        logger.info("State: " + pb2.getState());
     }
 
 
     @Override
     public void frameRate() {
-        System.out.println(testCtrl.frameRate());
+        logger.info(testCtrl.frameRate());
     }
 
 
     @Override
     public void actualFrame() {
-        System.out.println(testCtrl.getActualFrame());
+        logger.info(testCtrl.getActualFrame());
     }
 
 
     @Override
     public void timeCode() {
-        System.out.println(testCtrl.timeCode());
+        logger.info(testCtrl.timeCode());
     }
 
 
@@ -139,9 +138,30 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
 
     @Override
-    public SimpleVideoComponent getSimpleVideoComponent() {
-        pb2.getSinks();
-        return simpleVC;
+    public void timeStamp() {
+        Sample sample = simpleVC.getAppSink().pullPreroll();
+        Buffer buf = sample.getBuffer();
+        logger.error("Not inmplemented method!!!");
+    }
+
+
+    @Override
+    public void bufferInfo() {
+        Sample sample = simpleVC.getAppSink().pullPreroll();
+        Buffer buf = sample.getBuffer();
+        logger.info("Buffer getDuration: " + buf.getDuration().toNanos());
+        logger.info("Buffer getDecodeTimestamp: " + buf.getDecodeTimestamp().toNanos());
+        logger.info("Buffer getPresentationTimestamp: " + buf.getPresentationTimestamp().toNanos());
+        logger.info("Buffer getOfset: " + buf.getOffset());
+        logger.info("Buffer getOfsetEnd: " + buf.getOffsetEnd());
+
+    }
+
+
+    @Override
+    public void stepEvent() {
+
+        testCtrl.step(5);
     }
 
 }
