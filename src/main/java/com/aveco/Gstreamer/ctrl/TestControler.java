@@ -5,11 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.freedesktop.gstreamer.ClockTime;
+import org.freedesktop.gstreamer.Buffer;
 import org.freedesktop.gstreamer.Format;
+import org.freedesktop.gstreamer.Pad;
 import org.freedesktop.gstreamer.Sample;
+import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.elements.PlayBin;
-import org.freedesktop.gstreamer.elements.PlayBin.VIDEO_TAGS_CHANGED;
+import org.freedesktop.gstreamer.event.StepEvent;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.freedesktop.gstreamer.query.SeekingQuery;
 import org.slf4j.Logger;
@@ -40,11 +42,31 @@ public class TestControler implements ITestControler {
     }
 
 
+    private Sample getSample() {
+        Sample sample;
+        if (playBin.getState().equals(State.PAUSED)) {
+            sample = vCmp.getAppSink().pullPreroll();
+        } else {
+            sample = vCmp.getAppSink().pullSample();
+        }
+        return sample;
+    }
+
+
+    private Buffer getBuffer() {
+        return getSample().getBuffer();
+    }
+
+
     @Override
     public String timeCode() {
-        int frameI = getActualFrame(playBin.queryPosition(Format.TIME), getFrameRate());
+        Buffer buf = getBuffer();
+        long time = buf.getPresentationTimestamp().toNanos();
+        long actualFrame = actualFrame(time, buf.getDuration().toNanos());
+        int frameI = frameInSec(actualFrame);
+
         String frame = frameI < 10 ? "0" + frameI : String.valueOf(frameI);
-        frame = "Time Code: " + ClockTime.fromNanos(playBin.queryPosition(Format.TIME)).toString() + ":"
+        frame = "Time Code: " + buf.getPresentationTimestamp() + ":"
                 + frame;
         logger.debug(frame);
         return frame;
@@ -61,7 +83,7 @@ public class TestControler implements ITestControler {
 
     @Override
     public String timeForOneFrame() {
-        String timeForOneFrame = "Time for 1 frame: " + timeForOneFrame(getFrameRate());
+        String timeForOneFrame = "Time for 1 frame: " + getBuffer().getDuration().toNanos();
         logger.debug(timeForOneFrame);
         return timeForOneFrame;
     }
@@ -69,32 +91,31 @@ public class TestControler implements ITestControler {
 
     @Override
     public String getDuration() {
-        long duration = playBin.queryDuration(Format.TIME);
-        String durationS = "Video Duration: " + ClockTime.fromNanos(duration).toString() + ":"
-                + getActualFrame(duration, getFrameRate());
-        logger.debug(durationS);
-        return durationS;
+        logger.warn("Uninplemented!!!");
+//        String durationS = "Frame Duration: " + getBuffer().getDuration().toNanos();
+//        logger.debug(durationS);
+        return "";
     }
 
 
     @Override
     public String getActualFrame() {
-        String actualFrame = "Actual frame: " + getActualFrame(playBin.queryDuration(Format.TIME), getFrameRate());
+        Buffer buf = getBuffer();
+        String actualFrame = "Actual frame: "
+                + actualFrame(buf.getPresentationTimestamp().toNanos(), buf.getDuration().toNanos());
         logger.debug(actualFrame);
         return actualFrame;
     }
 
 
-    public double timeForOneFrame(double frameRate) {
-        logger.trace("Time for one frame: " + (1000000000 / frameRate));
-        return 1000000000 / frameRate;
+    public int frameInSec(long frames) {
+        int result = (int) (frames % getFrameRate());
+        return result;
     }
 
 
-    public int getActualFrame(long playBinPosition, double frameRate) {
-        double temp = playBinPosition / timeForOneFrame(frameRate);
-        temp = temp % frameRate;
-        return (int) temp;
+    public long actualFrame(long position, long timeForOneFrame) {
+        return position / timeForOneFrame;
     }
 
 
@@ -112,8 +133,10 @@ public class TestControler implements ITestControler {
 
 
     @Override
-    public String actualTimeP() {
-        return "Query Position(Percent):" + playBin.queryPosition(Format.PERCENT);
+    public String presentationTimeStemp() {
+        String timeStamp = "TimeStamp: " + getBuffer().getPresentationTimestamp().toNanos();
+        logger.debug(timeStamp);
+        return timeStamp;
     }
 
 
@@ -159,6 +182,17 @@ public class TestControler implements ITestControler {
             return q.getEnd();
         }
         return 0;
+    }
+
+
+    @Override
+    public void step(int count) {
+
+        for(Pad item : vCmp.getAppSink().getPads()){
+            logger.info("Steping");
+          item.pushEvent(new StepEvent(Format.TIME, 400000000 , count, true, false));
+        }
+        
     }
 
 }
