@@ -15,6 +15,8 @@ import com.aveco.Gstreamer.action.FrameRate;
 import com.aveco.Gstreamer.action.MinusOneSec;
 import com.aveco.Gstreamer.action.Pause;
 import com.aveco.Gstreamer.action.Play;
+import com.aveco.Gstreamer.action.PlayOneFrameBack;
+import com.aveco.Gstreamer.action.PlayOneFrameFront;
 import com.aveco.Gstreamer.action.PlusOneSec;
 import com.aveco.Gstreamer.action.RunTest;
 import com.aveco.Gstreamer.action.Sleep;
@@ -34,11 +36,13 @@ public class CommandLine implements Runnable {
 
     private final String help = "man";
     private Map<String, CtrlAction> actions;
+    private CommandBuffer buffer;
     private Scanner sc = new Scanner(System.in);
 
 
-    public CommandLine(IVideoPlayerCtrl ctrl) {
+    public CommandLine(IVideoPlayerCtrl ctrl, CommandBuffer buffer) {
         super();
+        this.buffer = buffer;
         initActions(ctrl);
     }
 
@@ -47,50 +51,43 @@ public class CommandLine implements Runnable {
     public void run() {
         logger.info("Thread for command line begin run");
         Thread.currentThread().setName("Command-console");
-        String commandLine;
+        String command;
         while (true) {
-            commandLine = sc.nextLine().trim();
-            // presed enter
-            if (commandLine.isEmpty()) {
+            command = buffer.getCommand();
+
+            if (command.trim().isEmpty()) {
                 continue;
             }
-            String commands[] = commandLine.split(" ");
-
-            for (String command : commands) {
-                // print help
-                if (command.equals(help)) {
-                    printHelp();
-                    continue;
-                }
-                // check command
-                if (actions.containsKey(command)) {
-                    try {
-                        actions.get(command).doIt();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        logger.error("Exception in commandLine");
-                    }
-                } else {
-                    unknownCoomand(command);
-                }
+            // print help
+            if (command.equals(help)) {
+                printHelp();
+                continue;
             }
-
+            // check command
+            if (actions.containsKey(command)) {
+                try {
+                    actions.get(command).doIt();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("Exception in commandLine");
+                }
+            } else {
+                unknownCoomand(command);
+            }
         }
-
     }
 
 
     private void printHelp() {
         for (Map.Entry<String, CtrlAction> entry : actions.entrySet()) {
-            System.out.println(entry.getKey() + "\t" + entry.getValue().help());
+            logger.info(entry.getKey() + "\t" + entry.getValue().help());
         }
     }
 
 
     private void unknownCoomand(String command) {
-        logger.trace("Unknown command '" + command + "'");
-        System.out.println("Unknown command '" + command + "'");
-        System.out.println("For help type '" + help + "'");
+        logger.warn("Unknown command '" + command + "'");
+        logger.info("For help type '" + help + "'");
     }
 
 
@@ -115,6 +112,8 @@ public class CommandLine implements Runnable {
         actions.put("stepf", new StepForward(ctrl));
         actions.put("stepb", new StepBack(ctrl));
         actions.put("cp", new CurrentPosition(ctrl));
+        actions.put("plff", new PlayOneFrameFront(ctrl));
+        actions.put("plfb", new PlayOneFrameBack(ctrl));
         logger.trace("Actions of command lind were inicialized");
     }
 
