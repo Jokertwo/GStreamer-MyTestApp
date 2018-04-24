@@ -23,6 +23,12 @@ public interface IVideoPlayerCtrl {
     void pause();
 
 
+    void playOneFrameFront();
+
+
+    void playOneFrameBack();
+
+
     void rewindToStart();
 
 

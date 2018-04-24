@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit;
 import org.freedesktop.gstreamer.Buffer;
 import org.freedesktop.gstreamer.ClockTime;
 import org.freedesktop.gstreamer.Format;
-import org.freedesktop.gstreamer.Sample;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.slf4j.Logger;
@@ -76,8 +75,8 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
         logger.info("Query Position 'buffer' > " + pb2.queryPosition(Format.BUFFERS));
         logger.info("Query Position 'default' > " + pb2.queryPosition(Format.DEFAULT));
         logger.info("Query Position 'percent' > " + pb2.queryPosition(Format.PERCENT));
-        logger.info("Query Position 'undefined' > " + pb2.queryPosition(Format.UNDEFINED));
         logger.info("Query Position 'time' > " + pb2.queryPosition(Format.TIME));
+        logger.info("Query Duration 'time' > " + pb2.queryDuration(Format.TIME));
     }
 
 
@@ -146,11 +145,11 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
     @Override
     public void bufferInfo() {
         Buffer buf = testCtrl.getBuffer();
-        logger.debug("Buffer getDuration: " + buf.getDuration().toNanos());
-        logger.debug("Buffer getDecodeTimestamp: " + buf.getDecodeTimestamp().toNanos());
-        logger.debug("Buffer getPresentationTimestamp: " + buf.getPresentationTimestamp().toNanos());
-        logger.debug("Buffer getOfset: " + buf.getOffset());
-        logger.debug("Buffer getOfsetEnd: " + buf.getOffsetEnd());
+        logger.debug("Buffer getDuration: \t" + buf.getDuration().toNanos());
+        logger.debug("Buffer getDecodeTimestamp: \t" + buf.getDecodeTimestamp().toNanos());
+        logger.debug("Buffer getPresentationTimestamp: \t" + buf.getPresentationTimestamp().toNanos());
+        logger.debug("Buffer getOfset: \t" + buf.getOffset());
+        logger.debug("Buffer getOfsetEnd: \t" + buf.getOffsetEnd());
 
     }
 
@@ -169,6 +168,19 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
     @Override
     public void currentPosition() {
         testCtrl.currentPosition();
+    }
+
+
+    @Override
+    public void playOneFrameFront() {
+        testCtrl.playOneFrameForward();
+
+    }
+
+
+    @Override
+    public void playOneFrameBack() {
+        testCtrl.playOneFrameBack();
     }
 
 }
