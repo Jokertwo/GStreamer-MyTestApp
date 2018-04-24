@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JComponent;
-import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
