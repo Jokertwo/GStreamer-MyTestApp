@@ -2,3 +2,6 @@ target
 *.classsrc/main/resources
 *.png
 *.mp4
+*.avi
+*.mov
+*.m2v
