@@ -2,10 +2,10 @@ package com.aveco.Gstreamer.action;
 
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
-public class StepEventAction implements CtrlAction {
+public class StepForward implements CtrlAction {
 
     private IVideoPlayerCtrl ctrl;
-    public StepEventAction(IVideoPlayerCtrl ctrl) {
+    public StepForward(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -13,7 +13,7 @@ public class StepEventAction implements CtrlAction {
 
     @Override
     public void doIt() {
-        ctrl.stepEvent();
+        ctrl.stepForward();
     }
 
 
