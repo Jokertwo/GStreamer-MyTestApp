@@ -89,19 +89,19 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public void frameRate() {
-        logger.info(testCtrl.frameRate());
+        testCtrl.frameRate();
     }
 
 
     @Override
     public void actualFrame() {
-        logger.info(testCtrl.getActualFrame());
+        testCtrl.getActualFrame();
     }
 
 
     @Override
     public void timeCode() {
-        logger.info(testCtrl.timeCode());
+        testCtrl.timeCode();
     }
 
 
@@ -139,29 +139,36 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public void timeStamp() {
-        Sample sample = simpleVC.getAppSink().pullPreroll();
-        Buffer buf = sample.getBuffer();
         logger.error("Not inmplemented method!!!");
     }
 
 
     @Override
     public void bufferInfo() {
-        Sample sample = simpleVC.getAppSink().pullPreroll();
-        Buffer buf = sample.getBuffer();
-        logger.info("Buffer getDuration: " + buf.getDuration().toNanos());
-        logger.info("Buffer getDecodeTimestamp: " + buf.getDecodeTimestamp().toNanos());
-        logger.info("Buffer getPresentationTimestamp: " + buf.getPresentationTimestamp().toNanos());
-        logger.info("Buffer getOfset: " + buf.getOffset());
-        logger.info("Buffer getOfsetEnd: " + buf.getOffsetEnd());
+        Buffer buf = testCtrl.getBuffer();
+        logger.debug("Buffer getDuration: " + buf.getDuration().toNanos());
+        logger.debug("Buffer getDecodeTimestamp: " + buf.getDecodeTimestamp().toNanos());
+        logger.debug("Buffer getPresentationTimestamp: " + buf.getPresentationTimestamp().toNanos());
+        logger.debug("Buffer getOfset: " + buf.getOffset());
+        logger.debug("Buffer getOfsetEnd: " + buf.getOffsetEnd());
 
     }
 
 
     @Override
-    public void stepEvent() {
+    public void stepForward() {
+        testCtrl.stepForward(1);
+    }
 
-        testCtrl.step(5);
+
+    public void stepBack() {
+        testCtrl.stepBack(1);
+    };
+
+
+    @Override
+    public void currentPosition() {
+        testCtrl.currentPosition();
     }
 
 }

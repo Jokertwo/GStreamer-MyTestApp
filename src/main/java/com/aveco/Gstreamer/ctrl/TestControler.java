@@ -5,12 +5,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.freedesktop.gstreamer.Buffer;
 import org.freedesktop.gstreamer.Format;
-import org.freedesktop.gstreamer.Pad;
 import org.freedesktop.gstreamer.Sample;
+import org.freedesktop.gstreamer.SeekFlags;
+import org.freedesktop.gstreamer.SeekType;
 import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.elements.PlayBin;
+import org.freedesktop.gstreamer.event.SeekEvent;
 import org.freedesktop.gstreamer.event.StepEvent;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.freedesktop.gstreamer.query.SeekingQuery;
@@ -18,7 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.gui.IMyGVideoPlayer;
 import com.aveco.Gstreamer.testRunnable.AbstractTest;
-import com.aveco.Gstreamer.testRunnable.FrameAccuracy;
+import com.aveco.Gstreamer.testRunnable.FrameStepAccuracy;
+import com.aveco.Gstreamer.testRunnable.HMSFAccuracy;
 
 
 public class TestControler implements ITestControler {
@@ -42,18 +46,21 @@ public class TestControler implements ITestControler {
     }
 
 
-    private Sample getSample() {
+    @Override
+    public Sample getSample() {
         Sample sample;
-        if (playBin.getState().equals(State.PAUSED)) {
+        if (!playBin.getState().equals(State.PLAYING)) {
             sample = vCmp.getAppSink().pullPreroll();
         } else {
-            sample = vCmp.getAppSink().pullSample();
+            sample = null;
+//            sample = vCmp.getAppSink().getLastBuffer();
         }
         return sample;
     }
 
 
-    private Buffer getBuffer() {
+    @Override
+    public Buffer getBuffer() {
         return getSample().getBuffer();
     }
 
@@ -149,7 +156,8 @@ public class TestControler implements ITestControler {
     @Override
     public void runTests() {
         logger.trace("Add tests to executor");
-        FrameAccuracy frameAcc = new FrameAccuracy(this, playBin, vCmp);
+        HMSFAccuracy hmsfAcc = new HMSFAccuracy(this, playBin, vCmp);
+        FrameStepAccuracy frameAcc = new FrameStepAccuracy(this, playBin, vCmp);
         tests.add(frameAcc);
         executor.execute(frameAcc);
     }
@@ -186,13 +194,36 @@ public class TestControler implements ITestControler {
 
 
     @Override
-    public void step(int count) {
-
-        for(Pad item : vCmp.getAppSink().getPads()){
-            logger.info("Steping");
-          item.pushEvent(new StepEvent(Format.TIME, 400000000 , count, true, false));
+    public void stepForward(int count) {
+        logger.debug("Step " + count + " frame/s forward");
+        if (!playBin
+            .sendEvent(new StepEvent(Format.TIME, getBuffer().getDuration().toNanos() + 1, count, true, false))) {
+            stopTest();
+            logger.error("Error during step forward");
         }
-        
+
+    }
+
+
+    @Override
+    public void stepBack(int count) {
+        logger.debug("Step " + count + " frame/s back");
+        long start = getBuffer().getPresentationTimestamp().toNanos() - (getBuffer().getDuration().toNanos() * count);
+        if (!playBin.sendEvent(new SeekEvent(-1.0, Format.TIME, SeekFlags.FLUSH, SeekType.NONE, -1, SeekType.SET,
+            start))) {
+            stopTest();
+            logger.error("Error during step back");
+        }
+    }
+
+
+    @Override
+    public void currentPosition() {
+        logger.debug("Update current position.");
+        if (!playBin.seek(getBuffer().getPresentationTimestamp().toNanos(), TimeUnit.NANOSECONDS)) {
+            logger.error("Error during update current position");
+        }
+
     }
 
 }
