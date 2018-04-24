@@ -5,3 +5,4 @@ target
 *.avi
 *.mov
 *.m2v
+src/main/java/com/aveco/Gstreamer/pokus/*.java
