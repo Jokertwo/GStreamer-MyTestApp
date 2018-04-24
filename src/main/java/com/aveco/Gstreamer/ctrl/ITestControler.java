@@ -1,5 +1,8 @@
 package com.aveco.Gstreamer.ctrl;
 
+import org.freedesktop.gstreamer.Buffer;
+import org.freedesktop.gstreamer.Sample;
+
 public interface ITestControler {
 
     void runTests();
@@ -11,7 +14,13 @@ public interface ITestControler {
     void shotDown();
 
 
-    void step(int count);
+    void stepForward(int count);
+    
+    
+    void stepBack(int count);
+    
+    
+    void currentPosition();
 
 
     String frameRate();
@@ -39,5 +48,9 @@ public interface ITestControler {
 
 
     long getVideoEnd();
+    
+    Buffer getBuffer();
+    
+    Sample getSample();
 
 }

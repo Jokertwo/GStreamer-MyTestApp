@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.action.ActualFrame;
 import com.aveco.Gstreamer.action.BufferInfo;
 import com.aveco.Gstreamer.action.CtrlAction;
+import com.aveco.Gstreamer.action.CurrentPosition;
 import com.aveco.Gstreamer.action.End;
 import com.aveco.Gstreamer.action.Exit;
 import com.aveco.Gstreamer.action.FrameRate;
@@ -19,7 +20,8 @@ import com.aveco.Gstreamer.action.RunTest;
 import com.aveco.Gstreamer.action.Sleep;
 import com.aveco.Gstreamer.action.Start;
 import com.aveco.Gstreamer.action.State;
-import com.aveco.Gstreamer.action.StepEventAction;
+import com.aveco.Gstreamer.action.StepBack;
+import com.aveco.Gstreamer.action.StepForward;
 import com.aveco.Gstreamer.action.StopTest;
 import com.aveco.Gstreamer.action.Time;
 import com.aveco.Gstreamer.action.TimeCode;
@@ -62,7 +64,12 @@ public class CommandLine implements Runnable {
                 }
                 // check command
                 if (actions.containsKey(command)) {
-                    actions.get(command).doIt();
+                    try {
+                        actions.get(command).doIt();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        logger.error("Exception in commandLine");
+                    }
                 } else {
                     unknownCoomand(command);
                 }
@@ -105,7 +112,9 @@ public class CommandLine implements Runnable {
         actions.put("slp", new Sleep(ctrl));
         actions.put("stopT", new StopTest(ctrl));
         actions.put("buf", new BufferInfo(ctrl));
-        actions.put("step", new StepEventAction(ctrl));
+        actions.put("stepf", new StepForward(ctrl));
+        actions.put("stepb", new StepBack(ctrl));
+        actions.put("cp", new CurrentPosition(ctrl));
         logger.trace("Actions of command lind were inicialized");
     }
 
