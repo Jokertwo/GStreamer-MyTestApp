@@ -4,6 +4,8 @@ import java.util.concurrent.TimeUnit;
 import org.freedesktop.gstreamer.Buffer;
 import org.freedesktop.gstreamer.ClockTime;
 import org.freedesktop.gstreamer.Format;
+import org.freedesktop.gstreamer.Gst;
+import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.slf4j.Logger;
@@ -127,6 +129,10 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
     public void exit() {
         logger.info("App will be close");
         testCtrl.shotDown();
+        pb2.setState(State.NULL);
+        pb2.dispose();
+        Gst.deinit();
+        System.exit(0);
     }
 
 

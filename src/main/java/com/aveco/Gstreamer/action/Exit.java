@@ -17,8 +17,6 @@ public class Exit implements CtrlAction {
     @Override
     public void doIt() {
         ctrl.exit();
-        System.exit(0);
-
     }
 
 
