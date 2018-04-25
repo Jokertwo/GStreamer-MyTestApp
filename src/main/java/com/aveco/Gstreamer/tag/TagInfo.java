@@ -1,4 +1,4 @@
-package com.aveco.Gstreamer;
+package com.aveco.Gstreamer.tag;
 
 import java.util.List;
 import org.freedesktop.gstreamer.TagList;

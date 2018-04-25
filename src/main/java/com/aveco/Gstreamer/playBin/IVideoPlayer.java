@@ -1,17 +1,14 @@
-package com.aveco.Gstreamer.gui;
+package com.aveco.Gstreamer.playBin;
 
-import javax.swing.JPanel;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 
 
-public interface IMyGVideoPlayer {
+public interface IVideoPlayer {
 
     PlayBin getPlayBin();
 
 
     SimpleVideoComponent getSimpleVideoCompoment();
 
-
-    JPanel getPanel();
 }

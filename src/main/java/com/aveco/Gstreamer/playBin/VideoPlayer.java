@@ -1,44 +1,41 @@
-package com.aveco.Gstreamer.gui;
+package com.aveco.Gstreamer.playBin;
 
-import java.awt.BorderLayout;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-import java.util.List;
-import javax.swing.JPanel;
-import org.freedesktop.gstreamer.Bus;
-import org.freedesktop.gstreamer.Bus.ASYNC_DONE;
-import org.freedesktop.gstreamer.Bus.EOS;
-import org.freedesktop.gstreamer.Bus.ERROR;
-import org.freedesktop.gstreamer.Bus.TAG;
-import org.freedesktop.gstreamer.ElementFactory;
 import org.freedesktop.gstreamer.Event;
 import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.GstObject;
 import org.freedesktop.gstreamer.Pad;
-import org.freedesktop.gstreamer.Pad.EVENT_PROBE;
 import org.freedesktop.gstreamer.PadProbeReturn;
 import org.freedesktop.gstreamer.State;
-import org.freedesktop.gstreamer.TagList;
+import org.freedesktop.gstreamer.Bus.EOS;
+import org.freedesktop.gstreamer.Bus.ERROR;
+import org.freedesktop.gstreamer.Pad.EVENT_PROBE;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.event.TagEvent;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aveco.Gstreamer.TagInfo;
+import com.aveco.Gstreamer.tag.TagInfo;
+import com.aveco.Gstreamer.tag.TagPlayBin;
 
 
-@SuppressWarnings("serial")
-public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
+public class VideoPlayer implements Runnable, IVideoPlayer {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyGVideoPlayer.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(TagPlayBin.class);
     private SimpleVideoComponent vCmp;
     private PlayBin playBin;
+    private URI uri;
 
 
-    public MyGVideoPlayer(URI uri, URL url) throws MalformedURLException {
+    public VideoPlayer(URI uri) {
+        super();
+        this.uri = uri;
+        run();
+    }
 
+
+
+    public void run() {
         if (Gst.isInitialized()) {
 
             playBin = new PlayBin("VideoPlayer");
@@ -48,64 +45,20 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
             logger.trace("SimpleVideoComponent was created");
 
             addListeners();
-            new Thread(() -> getTag(uri)).start();
+
 //            eventProbe();
 
             playBin.setVideoSink(vCmp.getElement());
             playBin.setURI(uri);
-
-            setLayout(new BorderLayout());
-            add(vCmp, BorderLayout.CENTER);
 
             playBin.setState(State.PAUSED);
 
         } else {
             logger.error("GStreamer is not inicialized");
         }
-    }
-
-
-    private void getTag(URI uri) {
-        Thread.currentThread().setName("tag-finder");
-        PlayBin tagFinder = new PlayBin("TagFinder");
-        tagFinder.setVideoSink(ElementFactory.make("fakesink", "videosink"));
-        tagFinder.setURI(uri);
-        Bus.TAG tag = new TAG() {
-
-            @Override
-            public void tagsFound(GstObject source, TagList tagList) {
-                TagInfo.getInstance().parse(tagList);
-            }
-        };
-        tagFinder.getBus().connect(tag);
-        Bus.ASYNC_DONE asyn = new ASYNC_DONE() {
-
-            @Override
-            public void asyncDone(GstObject source) {
-                dispose(tagFinder, this, tag);
-
-            }
-        };
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        tagFinder.getBus().connect(asyn);
-        tagFinder.setState(State.PAUSED);
 
     }
-
-
-    private void dispose(PlayBin tagFinder, Bus.ASYNC_DONE asyn, Bus.TAG tag) {
-        tagFinder.getBus().disconnect(asyn);
-        tagFinder.getBus().disconnect(tag);
-        tagFinder.setState(State.NULL);
-        tagFinder.dispose();
-    }
-
-
+    
     private void addListeners() {
 
         playBin.getBus().connect(new EOS() {
@@ -182,9 +135,4 @@ public class MyGVideoPlayer extends JPanel implements IMyGVideoPlayer {
         return vCmp;
     }
 
-
-    @Override
-    public JPanel getPanel() {
-        return this;
-    }
 }

@@ -25,8 +25,8 @@ import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.freedesktop.gstreamer.query.SeekingQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aveco.Gstreamer.TagInfo;
-import com.aveco.Gstreamer.gui.IMyGVideoPlayer;
+import com.aveco.Gstreamer.playBin.IVideoPlayer;
+import com.aveco.Gstreamer.tag.TagInfo;
 import com.aveco.Gstreamer.testRunnable.AbstractTest;
 import com.aveco.Gstreamer.testRunnable.SteppingFrontBack;
 
@@ -42,7 +42,7 @@ public class TestControler implements ITestControler {
     private SeekingQuery q;
 
 
-    public TestControler(IMyGVideoPlayer videoPlayer) {
+    public TestControler(IVideoPlayer videoPlayer) {
         super();
         this.playBin = videoPlayer.getPlayBin();
         this.vCmp = videoPlayer.getSimpleVideoCompoment();

@@ -10,7 +10,7 @@ import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aveco.Gstreamer.gui.IMyGVideoPlayer;
+import com.aveco.Gstreamer.playBin.IVideoPlayer;
 
 
 public class VideoPlayerCtrl implements IVideoPlayerCtrl {
@@ -22,7 +22,7 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
     private SimpleVideoComponent simpleVC;
 
 
-    public VideoPlayerCtrl(IMyGVideoPlayer videoPlayer, ITestControler testCtrl) {
+    public VideoPlayerCtrl(IVideoPlayer videoPlayer, ITestControler testCtrl) {
         super();
         this.pb2 = videoPlayer.getPlayBin();
         this.testCtrl = testCtrl;

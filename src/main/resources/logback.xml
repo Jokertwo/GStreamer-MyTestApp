@@ -13,7 +13,7 @@
         </encoder>
     </appender>
 
-    <root level="ALL">
+    <root level="DEBUG">
 
         <appender-ref ref="textArea" />
     </root>

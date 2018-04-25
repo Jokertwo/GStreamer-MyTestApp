@@ -13,16 +13,16 @@ public class CreateLogger {
         JTextAreaAppender appender = new JTextAreaAppender();
         Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         LoggerContext loggerContext = rootLogger.getLoggerContext();
-        // we are not interested in auto-configuration
-        loggerContext.reset();
+//        // we are not interested in auto-configuration
+//        loggerContext.reset();
 
-        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(loggerContext);
-        encoder.setPattern("%date | %-5level | %logger[%thread] - %message%n");
-        encoder.start();
+//        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+//        encoder.setContext(loggerContext);
+//        encoder.setPattern("%date | %-5level | %logger[%thread] - %message%n");
+//        encoder.start();
 
         appender.setContext(loggerContext);
-        appender.setEncoder(encoder);
+//        appender.setEncoder(encoder);
         appender.start();
 
         rootLogger.addAppender(appender);

@@ -1,13 +1,9 @@
 package com.aveco.Gstreamer.ctrl;
 
-import static org.junit.Assert.*;
 import org.easymock.EasyMock;
-import static org.easymock.EasyMock.*;
 import org.freedesktop.gstreamer.Gst;
 import org.junit.Before;
-import org.junit.Test;
-import com.aveco.Gstreamer.gui.IMyGVideoPlayer;
-import com.aveco.Gstreamer.gui.MyGVideoPlayer;
+import com.aveco.Gstreamer.playBin.IVideoPlayer;
 
 
 public class TestControlerTest {
@@ -25,7 +21,7 @@ public class TestControlerTest {
     @Before
     public void setUp() throws Exception {
         Gst.init();
-        ctrl = new TestControler((IMyGVideoPlayer) EasyMock.mock(IVideoPlayerCtrl.class));        
+        ctrl = new TestControler((IVideoPlayer) EasyMock.mock(IVideoPlayerCtrl.class));        
     }
 
 
