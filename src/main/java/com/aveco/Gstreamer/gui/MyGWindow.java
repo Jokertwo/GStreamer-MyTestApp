@@ -18,10 +18,11 @@ public class MyGWindow extends JFrame {
         add(videoPlayer, "pushx,growx,h 50%,wrap");
         add(logPanel, "pushx,growx,h 50%,wrap");
         add(field, "pushx,growx");
-        setPreferredSize(new Dimension(600, 700));
+        setPreferredSize(new Dimension(600, 500));
         pack();
         setVisible(true);
         setAlwaysOnTop(true);
+        field.grabFocus();
     }
 
 }

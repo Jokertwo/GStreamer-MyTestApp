@@ -5,24 +5,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import org.freedesktop.gstreamer.Buffer;
+import org.freedesktop.gstreamer.Event;
 import org.freedesktop.gstreamer.Format;
-import org.freedesktop.gstreamer.GstObject;
+import org.freedesktop.gstreamer.Pad;
+import org.freedesktop.gstreamer.Pad.EVENT_PROBE;
+import org.freedesktop.gstreamer.PadProbeReturn;
 import org.freedesktop.gstreamer.Sample;
 import org.freedesktop.gstreamer.SeekFlags;
 import org.freedesktop.gstreamer.SeekType;
 import org.freedesktop.gstreamer.Segment;
 import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.TagList;
-import org.freedesktop.gstreamer.Bus.TAG;
 import org.freedesktop.gstreamer.elements.PlayBin;
+import org.freedesktop.gstreamer.event.EOSEvent;
 import org.freedesktop.gstreamer.event.SeekEvent;
 import org.freedesktop.gstreamer.event.TagEvent;
 import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.freedesktop.gstreamer.query.SeekingQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.aveco.Gstreamer.TagInfo;
 import com.aveco.Gstreamer.gui.IMyGVideoPlayer;
 import com.aveco.Gstreamer.testRunnable.AbstractTest;
 import com.aveco.Gstreamer.testRunnable.SteppingFrontBack;
@@ -37,8 +40,6 @@ public class TestControler implements ITestControler {
     private ExecutorService executor;
     private List<AbstractTest> tests;
     private SeekingQuery q;
-
-    private Object lock = new Object();
 
 
     public TestControler(IMyGVideoPlayer videoPlayer) {
@@ -249,19 +250,7 @@ public class TestControler implements ITestControler {
 
     @Override
     public void currentPosition() {
-//        logger.debug("Update current position.");
-//        if (!playBin.seek(playBin.queryPosition(Format.TIME), TimeUnit.NANOSECONDS)) {
-//            logger.error("Error during update current position");
-//        }
-        TagList temp = new TagList();
-        playBin.sendEvent(new TagEvent(temp));
-        List<String> names = temp.getTagNames();
-
-        for (String name : names) {
-            System.out.println(name + " : " + temp.getValue(name, 0));
-
-        }
-
+        logger.info(TagInfo.getInstance().toString());
     }
 
 
