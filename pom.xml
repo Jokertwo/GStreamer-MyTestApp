@@ -21,6 +21,7 @@
             <version>[0.9.2,1.0)</version>
         </dependency>
 
+
         <!-- Gstreamer 0.10 -->
         <!-- <dependency> -->
         <!-- <groupId>com.googlecode.gstreamer-java</groupId> -->
@@ -46,16 +47,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.freedesktop.gstreamer</groupId>
-            <artifactId>gst1-java-examples</artifactId>
-            <version>0.9-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
