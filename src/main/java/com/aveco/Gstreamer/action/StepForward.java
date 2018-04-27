@@ -1,10 +1,16 @@
 package com.aveco.Gstreamer.action;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+
 
 public class StepForward implements CtrlAction {
 
     private IVideoPlayerCtrl ctrl;
+    private static final Logger logger = LoggerFactory.getLogger(StepForward.class);
+
+
     public StepForward(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
@@ -12,15 +18,22 @@ public class StepForward implements CtrlAction {
 
 
     @Override
-    public void doIt() {
-        ctrl.stepForward();
+    public void doIt(String[] argument) {
+        if (argument.length > 1) {
+            int number;
+            if ((number = getNumber(argument[1], logger)) > 0) {
+                ctrl.stepForward(number);
+            }
+        } else {
+            ctrl.stepForward(1);
+        }
     }
 
 
     @Override
     public String help() {
         // TODO Auto-generated method stub
-        return "Perform one frame step -> i hope";
+        return "Perform one frame step forward (default 1 or value of argument)";
     }
 
 }

@@ -21,13 +21,13 @@ public interface ITestControler {
     void stepBack(int count);
 
 
-    void currentPosition();
+    void testAction();
 
 
-    void playOneFrameForward();
+    void playFrameForward(int number);
 
 
-    void playOneFrameBack();
+    void playFrameBack(int number);
 
 
     String frameRate();

@@ -8,7 +8,7 @@ public interface IVideoPlayerCtrl {
     void bufferInfo();
 
 
-    void currentPosition();
+    void TestAction();
 
 
     void exit();
@@ -23,10 +23,10 @@ public interface IVideoPlayerCtrl {
     void pause();
 
 
-    void playOneFrameFront();
+    void playFrameFront(int number);
 
 
-    void playOneFrameBack();
+    void playFrameBack(int number);
 
 
     void rewindToStart();
@@ -35,13 +35,16 @@ public interface IVideoPlayerCtrl {
     void rewindToEnd();
 
 
-    void rewindOneBack();
+    void rewindOneBack(int number);
 
 
-    void rewindOneFront();
+    void rewindFront(int number);
 
 
     void runTest();
+
+
+    void seek(long number);
 
 
     void sleep(int value);
@@ -50,10 +53,10 @@ public interface IVideoPlayerCtrl {
     void state();
 
 
-    void stepBack();
+    void stepBack(int number);
 
 
-    void stepForward();
+    void stepForward(int number);
 
 
     void stopTest();

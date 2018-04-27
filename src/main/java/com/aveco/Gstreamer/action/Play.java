@@ -15,7 +15,7 @@ public class Play implements CtrlAction {
 
 
     @Override
-    public void doIt() {
+    public void doIt(String[] argument) {
         ctrl.play();
     }
 

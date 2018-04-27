@@ -48,7 +48,7 @@ public class SteppingFrontBack extends AbstractTest {
             
             for(int j = 0; j < 10 ; j++){
                 sleep(200);
-                gettCtrl().playOneFrameForward();
+                gettCtrl().playFrameForward(1);
                 if(!isRunnig()){
                     break;
                 } 

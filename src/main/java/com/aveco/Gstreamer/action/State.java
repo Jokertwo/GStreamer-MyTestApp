@@ -14,7 +14,7 @@ public class State implements CtrlAction {
 
 
     @Override
-    public void doIt() {
+    public void doIt(String[] argument) {
         ctrl.state();
     }
 

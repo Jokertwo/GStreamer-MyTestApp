@@ -13,7 +13,7 @@ public class Sleep implements CtrlAction {
 
 
     @Override
-    public void doIt() {
+    public void doIt(String[] argument) {
         ctrl.sleep(500);
     }
 

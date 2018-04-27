@@ -1,15 +1,18 @@
 package com.aveco.Gstreamer;
 
 import java.util.LinkedList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class CommandBuffer {
 
     private LinkedList<String> commandBuffer;
-
+    private static final Logger logger = LoggerFactory.getLogger(CommandBuffer.class);
 
     public CommandBuffer() {
         commandBuffer = new LinkedList<>();
+        logger.trace("Command buffer was inicialzed.");
     }
 
 
@@ -18,6 +21,7 @@ public class CommandBuffer {
 
         while (commandBuffer.isEmpty()) {
             try {
+                logger.trace(Thread.currentThread().getName() + " have nothing to do -> wait");
                 wait();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
@@ -26,7 +30,7 @@ public class CommandBuffer {
         }
         command = commandBuffer.getFirst();
         commandBuffer.removeFirst();
-
+        logger.trace(Thread.currentThread().getName() + " pickUp command from buffer.");
         return command;
     }
 
@@ -35,6 +39,7 @@ public class CommandBuffer {
 
         commandBuffer.addLast(command);
         notify();
+        logger.trace(Thread.currentThread().getName() + " store value to buffer and call notify");
 
     }
 }

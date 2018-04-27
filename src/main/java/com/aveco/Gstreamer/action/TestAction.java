@@ -3,28 +3,28 @@ package com.aveco.Gstreamer.action;
 import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 
 
-public class PlayOneFrameFront implements CtrlAction {
-    
-    
+public class TestAction implements CtrlAction {
+
     private IVideoPlayerCtrl ctrl;
 
 
-    public PlayOneFrameFront(IVideoPlayerCtrl ctrl) {
+    public TestAction(IVideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
 
 
     @Override
-    public void doIt() {
-        ctrl.playOneFrameFront();
+    public void doIt(String[] argument) {
+        ctrl.TestAction();
+
     }
 
 
     @Override
     public String help() {
         // TODO Auto-generated method stub
-        return "Play one frame front";
+        return "Action for test new thing";
     }
 
 }

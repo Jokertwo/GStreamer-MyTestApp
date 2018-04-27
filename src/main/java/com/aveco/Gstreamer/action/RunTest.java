@@ -15,7 +15,7 @@ public class RunTest implements CtrlAction {
 
 
     @Override
-    public void doIt() {
+    public void doIt(String[] argument) {
         ctrl.runTest();
     }
 

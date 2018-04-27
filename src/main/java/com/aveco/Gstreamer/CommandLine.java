@@ -1,24 +1,24 @@
 package com.aveco.Gstreamer;
 
 import java.util.Map;
-import java.util.Scanner;
 import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.action.ActualFrame;
 import com.aveco.Gstreamer.action.BufferInfo;
 import com.aveco.Gstreamer.action.CtrlAction;
-import com.aveco.Gstreamer.action.CurrentPosition;
+import com.aveco.Gstreamer.action.TestAction;
 import com.aveco.Gstreamer.action.End;
 import com.aveco.Gstreamer.action.Exit;
 import com.aveco.Gstreamer.action.FrameRate;
-import com.aveco.Gstreamer.action.MinusOneSec;
+import com.aveco.Gstreamer.action.RewindBack;
 import com.aveco.Gstreamer.action.Pause;
 import com.aveco.Gstreamer.action.Play;
-import com.aveco.Gstreamer.action.PlayOneFrameBack;
-import com.aveco.Gstreamer.action.PlayOneFrameFront;
-import com.aveco.Gstreamer.action.PlusOneSec;
+import com.aveco.Gstreamer.action.PlayFrameBack;
+import com.aveco.Gstreamer.action.PlayFrameFront;
+import com.aveco.Gstreamer.action.RewindFront;
 import com.aveco.Gstreamer.action.RunTest;
+import com.aveco.Gstreamer.action.Seek;
 import com.aveco.Gstreamer.action.Sleep;
 import com.aveco.Gstreamer.action.Start;
 import com.aveco.Gstreamer.action.State;
@@ -37,7 +37,6 @@ public class CommandLine implements Runnable {
     private final String help = "man";
     private Map<String, CtrlAction> actions;
     private CommandBuffer buffer;
-    private Scanner sc = new Scanner(System.in);
 
 
     public CommandLine(IVideoPlayerCtrl ctrl, CommandBuffer buffer) {
@@ -51,28 +50,29 @@ public class CommandLine implements Runnable {
     public void run() {
         logger.info("Thread for command line begin run");
         Thread.currentThread().setName("Command-console");
-        String command;
+        String commands;
         while (true) {
-            command = buffer.getCommand();
+            commands = buffer.getCommand();
 
-            if (command.trim().isEmpty()) {
+            if (commands.trim().isEmpty()) {
                 continue;
             }
             // print help
-            if (command.equals(help)) {
+            if (commands.equals(help)) {
                 printHelp();
                 continue;
             }
+            String[] splitCommand = commands.split(" ");
             // check command
-            if (actions.containsKey(command)) {
+            if (actions.containsKey(splitCommand[0])) {
                 try {
-                    actions.get(command).doIt();
+                    actions.get(splitCommand[0]).doIt(splitCommand);
                 } catch (Exception e) {
                     e.printStackTrace();
                     logger.error("Exception in commandLine");
                 }
             } else {
-                unknownCoomand(command);
+                unknownCoomand(commands);
             }
         }
     }
@@ -95,8 +95,8 @@ public class CommandLine implements Runnable {
         actions = new TreeMap<>();
         actions.put("pl", new Play(ctrl));
         actions.put("ps", new Pause(ctrl));
-        actions.put("+1", new PlusOneSec(ctrl));
-        actions.put("-1", new MinusOneSec(ctrl));
+        actions.put("+1", new RewindFront(ctrl));
+        actions.put("-1", new RewindBack(ctrl));
         actions.put("start", new Start(ctrl));
         actions.put("end", new End(ctrl));
         actions.put("state", new State(ctrl));
@@ -111,9 +111,10 @@ public class CommandLine implements Runnable {
         actions.put("buf", new BufferInfo(ctrl));
         actions.put("stepf", new StepForward(ctrl));
         actions.put("stepb", new StepBack(ctrl));
-        actions.put("cp", new CurrentPosition(ctrl));
-        actions.put("plff", new PlayOneFrameFront(ctrl));
-        actions.put("plfb", new PlayOneFrameBack(ctrl));
+        actions.put("cp", new TestAction(ctrl));
+        actions.put("plff", new PlayFrameFront(ctrl));
+        actions.put("plfb", new PlayFrameBack(ctrl));
+        actions.put("seek", new Seek(ctrl));
         logger.trace("Actions of command lind were inicialized");
     }
 

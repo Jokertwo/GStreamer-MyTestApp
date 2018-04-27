@@ -6,26 +6,20 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.freedesktop.gstreamer.Buffer;
-import org.freedesktop.gstreamer.Event;
 import org.freedesktop.gstreamer.Format;
-import org.freedesktop.gstreamer.Pad;
-import org.freedesktop.gstreamer.Pad.EVENT_PROBE;
-import org.freedesktop.gstreamer.PadProbeReturn;
 import org.freedesktop.gstreamer.Sample;
 import org.freedesktop.gstreamer.SeekFlags;
 import org.freedesktop.gstreamer.SeekType;
 import org.freedesktop.gstreamer.Segment;
 import org.freedesktop.gstreamer.State;
-import org.freedesktop.gstreamer.TagList;
 import org.freedesktop.gstreamer.elements.PlayBin;
-import org.freedesktop.gstreamer.event.EOSEvent;
 import org.freedesktop.gstreamer.event.SeekEvent;
-import org.freedesktop.gstreamer.event.TagEvent;
-import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
+import org.freedesktop.gstreamer.event.StepEvent;
 import org.freedesktop.gstreamer.query.SeekingQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
+import com.aveco.Gstreamer.playBin.SimpleVideoComponent;
 import com.aveco.Gstreamer.tag.TagInfo;
 import com.aveco.Gstreamer.testRunnable.AbstractTest;
 import com.aveco.Gstreamer.testRunnable.SteppingFrontBack;
@@ -104,9 +98,9 @@ public class TestControler implements ITestControler {
 
     @Override
     public String getDuration() {
-        logger.warn("Uninplemented!!!");
-//        String durationS = "Frame Duration: " + getBuffer().getDuration().toNanos();
-//        logger.debug(durationS);
+//        logger.warn("Uninplemented!!!");
+        String durationS = "Frame Duration: " + getBuffer().getDuration().toNanos();
+        logger.debug(durationS);
         return "";
     }
 
@@ -206,27 +200,32 @@ public class TestControler implements ITestControler {
     @Override
     public void stepForward(int count) {
         logger.debug("Step " + count + " frame/s forward");
-//        if (!playBin
-//            .sendEvent(new StepEvent(Format.TIME, getBuffer().getDuration().toNanos() + 1, count, true, false))) {
-//            stopTest();
-//            logger.error("Error during step forward");
+        if (!playBin
+            .sendEvent(new StepEvent(Format.TIME, getBuffer().getDuration().toNanos() + 1, count, true, false))) {
+            stopTest();
+            logger.error("Error during step forward");
+        }
+
+//        Segment seg = playBin.querySegment();
+//
+//        long startSegment = getBuffer().getPresentationTimestamp().toNanos()
+//                + ((getBuffer().getDuration().toNanos()) * count);
+//        if (normalizeWayToPlay(startSegment, seg.getStopValue())) {
+//            logger.debug("Stepf forward was succesfull");
 //        }
-
-        Segment seg = playBin.querySegment();
-
-        long startSegment = getBuffer().getPresentationTimestamp().toNanos()
-                + (getBuffer().getDuration().toNanos() * count);
-        normalizeWayToPlay(startSegment, seg.getStopValue());
+//        normalizeWayToPlay(seg.getStartValue(),seg.getStartValue());
     }
 
 
-    private void normalizeWayToPlay(long startSegment, long stopSegment) {
+    private boolean normalizeWayToPlay(long startSegment, long stopSegment) {
         SeekEvent step = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, startSegment, SeekType.SET,
             stopSegment);
         if (!playBin.sendEvent(step)) {
             stopTest();
             logger.error("Error during step back");
+            return false;
         }
+        return true;
     }
 
 
@@ -235,21 +234,31 @@ public class TestControler implements ITestControler {
      */
     @Override
     public void stepBack(int count) {
+//        Segment seg = playBin.querySegment();
+//        logger.debug("Step " + count + " frame/s back");
+//        long start = getBuffer().getPresentationTimestamp().toNanos()
+//                - ((getBuffer().getDuration().toNanos() * count) - 1);
+//        SeekEvent step = new SeekEvent(-1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, 0, SeekType.SET, start);
+//        if (!playBin.sendEvent(step)) {
+//            stopTest();
+//            logger.error("Error during step back");
+//        }
+//        if (normalizeWayToPlay(start, seg.getStopValue())) {
+//            logger.debug("Stepf back was succesfull");
+//        }
+        
         Segment seg = playBin.querySegment();
-        logger.debug("Step " + count + " frame/s back");
+
         long start = getBuffer().getPresentationTimestamp().toNanos()
-                - ((getBuffer().getDuration().toNanos() * count) - 1);
-        SeekEvent step = new SeekEvent(-1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, 0, SeekType.SET, start);
-        if (!playBin.sendEvent(step)) {
-            stopTest();
-            logger.error("Error during step back");
+                - (getBuffer().getDuration().toNanos() * count);
+        if (normalizeWayToPlay(start, seg.getStopValue())) {
+            logger.debug("Stepf forward was succesfull");
         }
-        normalizeWayToPlay(start, seg.getStopValue());
     }
 
 
     @Override
-    public void currentPosition() {
+    public void testAction() {
         logger.info(TagInfo.getInstance().toString());
     }
 
@@ -258,15 +267,15 @@ public class TestControler implements ITestControler {
      * Play one frame forward
      */
     @Override
-    public void playOneFrameForward() {
-        logger.debug("Play one frame forward");
+    public void playFrameForward(int number) {
+        logger.debug("Play " + number + " frame/s forward");
         Segment seg = playBin.querySegment();
         long start = getBuffer().getPresentationTimestamp().toNanos();
-        long stop = start + getBuffer().getDuration().toNanos();
+        long stop = start + (getBuffer().getDuration().toNanos() * number) + 1;
         SeekEvent event = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, start, SeekType.SET, stop);
         if (!playBin.sendEvent(event)) {
             stopTest();
-            logger.error("Error during play one frame");
+            logger.error("Error during play " + number + " frame/s");
         }
         playBin.play();
 
@@ -283,18 +292,18 @@ public class TestControler implements ITestControler {
      * Play one frame back
      */
     @Override
-    public void playOneFrameBack() {
+    public void playFrameBack(int number) {
         Segment seg = playBin.querySegment();
-        logger.debug("Play one frame back");
+        logger.debug("Play " + number + " frame/s back");
 
         long end = getBuffer().getPresentationTimestamp().toNanos();
         long start = getBuffer().getPresentationTimestamp().toNanos()
-                - getBuffer().getDuration().toNanos() - 1;
+                - (getBuffer().getDuration().toNanos() * number) - 1;
 
         SeekEvent step = new SeekEvent(-1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, start, SeekType.SET, end);
         if (!playBin.sendEvent(step)) {
             stopTest();
-            logger.error("Error during step back");
+            logger.error("Error during play " + number + " frame/s");
         }
         playBin.play();
 

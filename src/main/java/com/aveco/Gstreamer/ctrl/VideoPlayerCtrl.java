@@ -5,12 +5,15 @@ import org.freedesktop.gstreamer.Buffer;
 import org.freedesktop.gstreamer.ClockTime;
 import org.freedesktop.gstreamer.Format;
 import org.freedesktop.gstreamer.Gst;
+import org.freedesktop.gstreamer.SeekFlags;
+import org.freedesktop.gstreamer.SeekType;
 import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.elements.PlayBin;
-import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
+import org.freedesktop.gstreamer.event.SeekEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
+import com.aveco.Gstreamer.playBin.SimpleVideoComponent;
 
 
 public class VideoPlayerCtrl implements IVideoPlayerCtrl {
@@ -59,15 +62,15 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
 
     @Override
-    public void rewindOneBack() {
-        pb2.seek(pb2.queryPosition(Format.TIME) - sec, TimeUnit.NANOSECONDS);
+    public void rewindOneBack(int number) {
+        pb2.seek(pb2.queryPosition(Format.TIME) - (sec * number), TimeUnit.NANOSECONDS);
         logger.debug("Video was rewind one sec back");
     }
 
 
     @Override
-    public void rewindOneFront() {
-        pb2.seek(pb2.queryPosition(Format.TIME) + sec, TimeUnit.NANOSECONDS);
+    public void rewindFront(int number) {
+        pb2.seek(pb2.queryPosition(Format.TIME) + (sec * number), TimeUnit.NANOSECONDS);
         logger.debug("Video was rewind one sec forward");
     }
 
@@ -161,32 +164,55 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
 
     @Override
-    public void stepForward() {
-        testCtrl.stepForward(1);
+    public void stepForward(int number) {
+        testCtrl.stepForward(number);
     }
 
 
-    public void stepBack() {
-        testCtrl.stepBack(1);
+    public void stepBack(int number) {
+        testCtrl.stepBack(number);
     };
 
 
     @Override
-    public void currentPosition() {
-        testCtrl.currentPosition();
+    public void TestAction() {
+        testCtrl.testAction();
     }
 
 
     @Override
-    public void playOneFrameFront() {
-        testCtrl.playOneFrameForward();
+    public void playFrameFront(int number) {
+        testCtrl.playFrameForward(number);
 
     }
 
 
     @Override
-    public void playOneFrameBack() {
-        testCtrl.playOneFrameBack();
+    public void playFrameBack(int number) {
+        testCtrl.playFrameBack(number);
     }
+
+
+    @Override
+    public void seek(long number) {
+        logger.info("Seek to '" + number + "'");
+        SeekEvent seek = new SeekEvent(1.0, Format.TIME,SeekFlags.FLUSH , SeekType.SET , number, SeekType.NONE, -1);
+        if(pb2.sendEvent(seek)){
+            logger.debug("Seek to '"+number+"' was successful");
+        }
+        else{
+          logger.warn("Seek to '"+number+"' was unsuccessful");
+      }
+    }
+
+//    @Override
+//    public void seek(long number) {
+//        logger.info("Seek to '" + number + "'");
+//        if (pb2.seek(number, TimeUnit.NANOSECONDS)) {
+//            logger.debug("Seek to '" + number + "' was successful");
+//        } else {
+//            logger.warn("Seek to '" + number + "' was unsuccessful");
+//        }
+//    }
 
 }

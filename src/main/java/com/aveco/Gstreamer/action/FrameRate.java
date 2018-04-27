@@ -14,7 +14,7 @@ public class FrameRate implements CtrlAction {
 
 
     @Override
-    public void doIt() {
+    public void doIt(String[] argument) {
         ctrl.frameRate();
     }
 
