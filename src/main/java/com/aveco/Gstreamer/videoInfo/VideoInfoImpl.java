@@ -2,9 +2,13 @@ package com.aveco.Gstreamer.videoInfo;
 
 import java.util.List;
 import org.freedesktop.gstreamer.TagList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
-public class VideoInfoFirst implements VideoInfo {
+public class VideoInfoImpl implements VideoInfo {
+
+    public static final Logger logger = LoggerFactory.getLogger(VideoInfoImpl.class);
 
     private String audioCodec;
     private String datetime;
@@ -12,6 +16,10 @@ public class VideoInfoFirst implements VideoInfo {
     private String videoCodec;
     private String languageCode;
     private String bitRate;
+    private double frameRate = 0;
+    private long videoEndPAL;
+    private long videoEndNTSC;
+    private VideoType videoType;
 
     private static final String aCodec = "audio-codec";
     private static final String dTime = "datetime";
@@ -20,44 +28,32 @@ public class VideoInfoFirst implements VideoInfo {
     private static final String lCode = "language-code";
     private static final String bRate = "bitrate";
 
-    private FrameTool frameTool;
+    private IFrameTool frameTool;
 
 
-    public VideoInfoFirst() {
-        this.frameTool = new FrameToolFirst();
+    public VideoInfoImpl() {
+        this.frameTool = new FrameTool();
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#addDuration(long)
-     */
     @Override
     public boolean addDuration(long duration) {
         return frameTool.addDuration(duration);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#getNumberOfFrame(long)
-     */
     @Override
     public long getNumberOfFrame(long timeStamp) {
-        return frameTool.getNumberOfFrame(timeStamp);
+        return frameTool.getNumberOfFrame(timeStamp, videoType);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#getPositionOfFrame(long)
-     */
     @Override
     public long getPositionOfFrame(long frame) {
-        return frameTool.getPositionOfFrame(frame);
+        return frameTool.getPositionOfFrame(frame, videoType);
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#getBitRate()
-     */
     @Override
     public String getBitRate() {
         return bitRate;
@@ -69,9 +65,6 @@ public class VideoInfoFirst implements VideoInfo {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#parse(org.freedesktop.gstreamer.TagList)
-     */
     @Override
     public void parse(TagList tagList) {
         List<String> names = tagList.getTagNames();
@@ -102,9 +95,6 @@ public class VideoInfoFirst implements VideoInfo {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#getVideoCodec()
-     */
     @Override
     public String getVideoCodec() {
         return videoCodec;
@@ -118,9 +108,6 @@ public class VideoInfoFirst implements VideoInfo {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#getAudioCodec()
-     */
     @Override
     public String getAudioCodec() {
         return audioCodec;
@@ -134,9 +121,6 @@ public class VideoInfoFirst implements VideoInfo {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#getDatetime()
-     */
     @Override
     public String getDatetime() {
         return datetime;
@@ -150,9 +134,6 @@ public class VideoInfoFirst implements VideoInfo {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#getContainerFormat()
-     */
     @Override
     public String getContainerFormat() {
         return containerFormat;
@@ -166,9 +147,6 @@ public class VideoInfoFirst implements VideoInfo {
     }
 
 
-    /* (non-Javadoc)
-     * @see com.aveco.Gstreamer.videoInfo.VideoInfo#getLanguageCode()
-     */
     @Override
     public String getLanguageCode() {
         return languageCode;
@@ -185,12 +163,61 @@ public class VideoInfoFirst implements VideoInfo {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(aCodec + " : \t" + getAudioCodec() + "\n");
-        sb.append(vCodec + " : \t" + getVideoCodec() + "\n");
-        sb.append(dTime + " : \t" + getDatetime() + "\n");
-        sb.append(cFormat + " : \t" + getContainerFormat() + "\n");
-        sb.append(lCode + " : \t" + getLanguageCode() + "\n");
-        sb.append(bRate + " : \t" + getBitRate());
+        sb.append(aCodec + ":\t" + getAudioCodec() + "\n");
+        sb.append(vCodec + ":\t" + getVideoCodec() + "\n");
+        sb.append(dTime + ":\t" + getDatetime() + "\n");
+        sb.append(cFormat + ":\t" + getContainerFormat() + "\n");
+        sb.append(lCode + ":\t" + getLanguageCode() + "\n");
+        sb.append(bRate + ":\t" + getBitRate() + "\n");
+        sb.append("frame rate" + ":\t" + frameRate + "\n");
+        sb.append("VideoType" + ":\t" + videoType);
+        frameTool.printDur();
         return sb.toString();
+    }
+
+
+    @Override
+    public void setFrameRate(double frameRate) {
+        // set just fisrt time
+        if (videoType == null && frameRate > 0) {
+            int trunc = (int) frameRate;
+            if (trunc == 25) {
+                videoType = VideoType.PAL;
+            } else if (trunc == 29) {
+                videoType = VideoType.NTSC;
+            } else {
+                logger.error("Unknown format: " + frameRate);
+            }
+            this.frameRate = frameRate;
+        }
+    }
+
+
+    @Override
+    public VideoType getVideoType() {
+        return videoType;
+    }
+
+
+    @Override
+    public double getFrameRate() {
+        return frameRate;
+    }
+
+
+    @Override
+    public void setVideoEnd(long videoEnd) {
+        videoEndNTSC = videoEndPAL;
+        videoEndPAL = videoEnd;
+    }
+
+
+    @Override
+    public long getVideoEnd(VideoType videoType) {
+        if (videoType == VideoType.PAL) {
+            return videoEndPAL;
+        }
+        return videoEndNTSC;
+
     }
 }

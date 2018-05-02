@@ -8,15 +8,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.freedesktop.gstreamer.Gst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aveco.Gstreamer.ctrl.ITestControler;
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
 import com.aveco.Gstreamer.ctrl.TestControler;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 import com.aveco.Gstreamer.gui.CommandTextField;
@@ -25,38 +25,65 @@ import com.aveco.Gstreamer.gui.MyGWindow;
 import com.aveco.Gstreamer.log.CreateLogger;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
 import com.aveco.Gstreamer.playBin.VideoPlayer;
-import com.aveco.Gstreamer.tag.TagPlayBin;
+import com.aveco.Gstreamer.videoInfo.ParseVideoPlayBinFindEnd;
+import com.aveco.Gstreamer.videoInfo.ParseVideoPlayBinTag;
+import com.aveco.Gstreamer.videoInfo.VideoInfo;
+import com.aveco.Gstreamer.videoInfo.VideoInfoImpl;
 
 
 public class Main {
+    private static final String[] PATHS = new String[10];
+    static {
+        PATHS[0] = "\\com\\aveco\\res\\a.mp4";
+        PATHS[1] = "\\com\\aveco\\res\\b.mp4";
+        PATHS[2] = "\\com\\aveco\\res\\c.mp4";
+        PATHS[3] = "\\com\\aveco\\res\\tc_25fps_01min.avi";
+        PATHS[4] = "\\com\\aveco\\res\\tc_25fps_01min.m2v";
+        PATHS[5] = "\\com\\aveco\\res\\tc_29.97fps_df_1min.avi";
+        PATHS[6] = "\\com\\aveco\\res\\tc_29.97fps_df_1min.mov";
+        PATHS[7] = "\\com\\aveco\\res\\tc_30fps_ndf_01min.avi";
+        PATHS[8] = "\\com\\aveco\\res\\tc_30fps_ndf_01min.m2v";
+        PATHS[9] = "\\com\\aveco\\res\\tc_29.97fps_df_20min.avi";
 
-    public static final String PATH = "\\com\\aveco\\res\\a.mp4";
+    }
+
+    public static final String PATH = PATHS[2];
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    private ExecutorService execService;
     private LogInfo logInfo;
+    private IVideoPlayer videoPlayer;
+    private VideoInfo videoInfo;
+    private ExecutorService executor;
 
 
     public Main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
         new CreateLogger();
-        SwingUtilities.invokeAndWait(()-> logInfo = new LogInfo());
-
-        execService = Executors.newSingleThreadExecutor();
+        SwingUtilities.invokeAndWait(() -> logInfo = new LogInfo());
 
         logger.info("Begin of app for testing video.");
 
         logger.trace("Inicialize of Gsreamer");
         args = Gst.init("FirstAppGst", args);
+        executor = Executors.newSingleThreadExecutor();
 
         CommandBuffer commandBuffer = new CommandBuffer();
+        videoInfo = new VideoInfoImpl();
 
-        IVideoPlayer videoPlayer = new VideoPlayer(getURI());
-        ITestControler ctrlTest = new TestControler(videoPlayer);
-        IVideoPlayerCtrl ctrlVP = new VideoPlayerCtrl(videoPlayer, ctrlTest);
+        Future<IVideoPlayer> futureVideo = executor.submit(new VideoPlayer(getURI()));
+        executor.execute(new ParseVideoPlayBinTag(getURI(), videoInfo));
+        executor.execute(new ParseVideoPlayBinFindEnd(getURI(), videoInfo));
+        try {
+            videoPlayer = futureVideo.get();
+            if (videoPlayer == null) {
+                throw new NullPointerException("Video player was null");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
 
-        
-        execService.execute(new TagPlayBin(getURI()));
-        execService.execute(new CommandLine(ctrlVP, commandBuffer));
+        executor.execute(
+            new CommandLine(new VideoPlayerCtrl(videoPlayer, new TestControler(videoPlayer, videoInfo), videoInfo),
+                commandBuffer));
 
         // start gui
         SwingUtilities.invokeLater(() -> {
@@ -65,7 +92,7 @@ public class Main {
             new MyGWindow(panel, logInfo, new CommandTextField(commandBuffer));
         });
 
-        execService.shutdown();
+        executor.shutdown();
 
     }
 

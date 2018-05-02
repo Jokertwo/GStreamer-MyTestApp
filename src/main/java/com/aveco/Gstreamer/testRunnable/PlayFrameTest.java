@@ -10,34 +10,31 @@ import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.ctrl.ITestControler;
 
 
-public class SteppingFrontBack extends AbstractTest {
+public class PlayFrameTest extends AbstractTest {
 
+    private static final String PLAY_FRAME = "PlayFrameTest";
     public static final Logger logger = LoggerFactory.getLogger(SteppingFrontBack.class);
 
-    private static final String FRAME_STEP = "steppingTest";
-
-
-    public SteppingFrontBack(ITestControler tCtrl, PlayBin playBin, JComponent panel) {
-        super(tCtrl, playBin, panel); // TODO Auto-generated constructor stub
+    public PlayFrameTest(ITestControler tCtrl, PlayBin playBin, JComponent panel) {
+        super(tCtrl, playBin, panel);
     }
 
 
     @Override
     public void run() {
-        logger.info("Start of test 'SteppingFrontBack'");
-        Thread.currentThread().setName("Test-SteppingFrontBacky");
-        prepare(FRAME_STEP, logger);
+        Thread.currentThread().setName("Play-Frame-Test");
         getPlayBin().play();
-        sleep(10000);
-        logger.info("Video was paused");
+        sleep(5000);
         getPlayBin().pause();
+        sleep(200);
+        prepare(PLAY_FRAME, logger);
+        for (int i = 0; i < 10; i++) {
 
-        for (int i = 0; i < 5; i++) {
             sleep(200);
-            saveImage(FRAME_STEP, SteppingFrontBack.class.getName(), getPanel(), getValues(i));
+            saveImage(PLAY_FRAME, SteppingFrontBack.class.getName(), getPanel(), getValues(i));
             for (int j = 0; j < 50; j++) {
                 sleep(200);
-                gettCtrl().stepForward(1);
+                gettCtrl().playFrameForward(1);
                 if (!isRunnig()) {
                     break;
                 }
@@ -49,18 +46,11 @@ public class SteppingFrontBack extends AbstractTest {
                     break;
                 }
             }
-            sleep(200);
-            saveImage(FRAME_STEP, SteppingFrontBack.class.getName(), getPanel(), getValues(i));
             if (!isRunnig()) {
                 break;
             }
+            saveImage(PLAY_FRAME, SteppingFrontBack.class.getName(), getPanel(), getValues(i));
         }
-
-//            sleep(200);
-//            saveImage(FRAME_STEP, SteppingFrontBack.class.getName(), getPanel(), getValues());
-
-        getPlayBin().pause();
-        logger.info("End of test 'SteppingFrontBack'");
 
     }
 

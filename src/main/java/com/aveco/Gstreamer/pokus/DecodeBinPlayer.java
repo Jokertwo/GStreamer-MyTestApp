@@ -17,7 +17,7 @@ import org.freedesktop.gstreamer.Pad;
 import org.freedesktop.gstreamer.Pipeline;
 import org.freedesktop.gstreamer.Structure;
 import org.freedesktop.gstreamer.elements.DecodeBin;
-import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
+import com.aveco.Gstreamer.playBin.SimpleVideoComponent;
 
 /**
  * An example of playing audio/video files using a decodebin and manually linking

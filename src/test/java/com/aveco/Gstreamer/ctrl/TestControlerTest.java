@@ -18,11 +18,7 @@ public class TestControlerTest {
    
 
 
-    @Before
-    public void setUp() throws Exception {
-        Gst.init();
-        ctrl = new TestControler((IVideoPlayer) EasyMock.mock(IVideoPlayerCtrl.class));        
-    }
+   
 
 
    

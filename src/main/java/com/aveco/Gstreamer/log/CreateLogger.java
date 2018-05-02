@@ -3,7 +3,6 @@ package com.aveco.Gstreamer.log;
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 
 
 public class CreateLogger {
@@ -20,7 +19,7 @@ public class CreateLogger {
 //        encoder.setContext(loggerContext);
 //        encoder.setPattern("%date | %-5level | %logger[%thread] - %message%n");
 //        encoder.start();
-
+        
         appender.setContext(loggerContext);
 //        appender.setEncoder(encoder);
         appender.start();

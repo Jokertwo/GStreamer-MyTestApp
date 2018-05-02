@@ -1,27 +1,25 @@
 package com.aveco.Gstreamer.playBin;
 
 import java.net.URI;
+import java.util.concurrent.Callable;
+import org.freedesktop.gstreamer.Bus.EOS;
+import org.freedesktop.gstreamer.Bus.ERROR;
 import org.freedesktop.gstreamer.Event;
 import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.GstObject;
 import org.freedesktop.gstreamer.Pad;
+import org.freedesktop.gstreamer.Pad.EVENT_PROBE;
 import org.freedesktop.gstreamer.PadProbeReturn;
 import org.freedesktop.gstreamer.State;
-import org.freedesktop.gstreamer.Bus.EOS;
-import org.freedesktop.gstreamer.Bus.ERROR;
-import org.freedesktop.gstreamer.Pad.EVENT_PROBE;
 import org.freedesktop.gstreamer.elements.PlayBin;
-import org.freedesktop.gstreamer.event.TagEvent;
-import org.freedesktop.gstreamer.examples.SimpleVideoComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aveco.Gstreamer.tag.TagInfo;
-import com.aveco.Gstreamer.tag.TagPlayBin;
+import com.aveco.Gstreamer.videoInfo.ParseVideoPlayBinTag;
 
 
-public class VideoPlayer implements Runnable, IVideoPlayer {
+public class VideoPlayer implements Callable<IVideoPlayer>, IVideoPlayer {
 
-    private static final Logger logger = LoggerFactory.getLogger(TagPlayBin.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParseVideoPlayBinTag.class);
     private SimpleVideoComponent vCmp;
     private PlayBin playBin;
     private URI uri;
@@ -30,15 +28,16 @@ public class VideoPlayer implements Runnable, IVideoPlayer {
     public VideoPlayer(URI uri) {
         super();
         this.uri = uri;
-        run();
+//        run();
     }
 
 
-
-    public void run() {
+    @Override
+    public IVideoPlayer call() throws Exception {
         if (Gst.isInitialized()) {
 
             playBin = new PlayBin("VideoPlayer");
+            
             logger.trace("PlayBin was created");
 
             vCmp = new SimpleVideoComponent();
@@ -46,19 +45,20 @@ public class VideoPlayer implements Runnable, IVideoPlayer {
 
             addListeners();
 
-//            eventProbe();
-
             playBin.setVideoSink(vCmp.getElement());
             playBin.setURI(uri);
 
             playBin.setState(State.PAUSED);
+            logger.trace("PlayBin for play was set PAUSED state");
+            return this;
 
         } else {
             logger.error("GStreamer is not inicialized");
         }
-
+        return null;
     }
-    
+
+
     private void addListeners() {
 
         playBin.getBus().connect(new EOS() {
@@ -80,9 +80,11 @@ public class VideoPlayer implements Runnable, IVideoPlayer {
             }
         });
         logger.trace("ERROR listener was add to playBin");
+
     }
 
 
+    @SuppressWarnings("unused")
     private void eventProbe() {
 
         Pad videoSinkPad = vCmp.getElement().getStaticPad("sink");
@@ -91,15 +93,15 @@ public class VideoPlayer implements Runnable, IVideoPlayer {
             @Override
             public PadProbeReturn eventReceived(Pad pad, Event event) {
 
-                if (event instanceof TagEvent) {
-//                    List<String> names = ((TagEvent) event).getTagList().getTagNames();
-//
-//                    for (String name : names) {
-//                        System.out.println(name + " : " + ((TagEvent) event).getTagList().getValue(name, 0));
-//
-//                    }
-                    TagInfo.getInstance().parse(((TagEvent) event).getTagList());
-                }
+//                if (event instanceof TagEvent) {
+////                    List<String> names = ((TagEvent) event).getTagList().getTagNames();
+////
+////                    for (String name : names) {
+////                        System.out.println(name + " : " + ((TagEvent) event).getTagList().getValue(name, 0));
+////
+////                    }
+////                    TagInfo.getInstance().parse(((TagEvent) event).getTagList());
+//                }
 //                else if (event instanceof ReconfigureEvent) {
 //                    ReconfigureEvent reg = (ReconfigureEvent) event;
 //                    Structure struct = reg.getStructure();
@@ -115,7 +117,7 @@ public class VideoPlayer implements Runnable, IVideoPlayer {
 //                    
 //                }
 //                else {
-//                    System.out.println(event);
+                    System.out.println(event);
 //                }
                 return PadProbeReturn.OK;
             }

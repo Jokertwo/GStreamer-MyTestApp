@@ -5,33 +5,48 @@ import org.freedesktop.gstreamer.TagList;
 
 public interface VideoInfo {
 
-    public abstract boolean addDuration(long duration);
+    boolean addDuration(long duration);
 
 
-    public abstract long getNumberOfFrame(long timeStamp);
+    long getNumberOfFrame(long timeStamp);
 
 
-    public abstract long getPositionOfFrame(long frame);
+    long getPositionOfFrame(long frame);
 
 
-    public abstract String getBitRate();
+    String getBitRate();
 
 
-    public abstract void parse(TagList tagList);
+    void parse(TagList tagList);
 
 
-    public abstract String getVideoCodec();
+    void setFrameRate(double frameRate);
 
 
-    public abstract String getAudioCodec();
+    void setVideoEnd(long videoEnd);
 
 
-    public abstract String getDatetime();
+    long getVideoEnd(VideoType videoType);
 
 
-    public abstract String getContainerFormat();
+    VideoType getVideoType();
 
 
-    public abstract String getLanguageCode();
+    double getFrameRate();
+
+
+    String getVideoCodec();
+
+
+    String getAudioCodec();
+
+
+    String getDatetime();
+
+
+    String getContainerFormat();
+
+
+    String getLanguageCode();
 
 }

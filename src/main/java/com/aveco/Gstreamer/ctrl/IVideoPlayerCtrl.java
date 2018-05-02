@@ -15,6 +15,9 @@ public interface IVideoPlayerCtrl {
 
 
     void frameRate();
+    
+    
+    void videoInfo();
 
 
     void play();

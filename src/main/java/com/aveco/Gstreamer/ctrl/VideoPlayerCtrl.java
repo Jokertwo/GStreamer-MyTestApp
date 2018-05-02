@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
 import com.aveco.Gstreamer.playBin.SimpleVideoComponent;
+import com.aveco.Gstreamer.videoInfo.VideoInfo;
 
 
 public class VideoPlayerCtrl implements IVideoPlayerCtrl {
@@ -22,14 +23,16 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
     private PlayBin pb2;
     private long sec = 1000000000;
     private ITestControler testCtrl;
+    private VideoInfo videoInfo;
     private SimpleVideoComponent simpleVC;
 
 
-    public VideoPlayerCtrl(IVideoPlayer videoPlayer, ITestControler testCtrl) {
+    public VideoPlayerCtrl(IVideoPlayer videoPlayer, ITestControler testCtrl, VideoInfo videoInfo) {
         super();
         this.pb2 = videoPlayer.getPlayBin();
         this.testCtrl = testCtrl;
         this.simpleVC = videoPlayer.getSimpleVideoCompoment();
+        this.videoInfo = videoInfo;
     }
 
 
@@ -56,7 +59,8 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public void rewindToEnd() {
-        pb2.seek(testCtrl.getVideoEnd(), TimeUnit.NANOSECONDS);
+        seek(videoInfo.getVideoEnd(videoInfo.getVideoType()));
+//        pb2.seek(videoInfo.getVideoEnd(videoInfo.getVideoType()), TimeUnit.NANOSECONDS);
         logger.debug("Video was rewind to end");
     }
 
@@ -99,7 +103,9 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public void actualFrame() {
-        testCtrl.getActualFrame();
+
+        logger.info(videoInfo.getNumberOfFrame(testCtrl.getBuffer().getPresentationTimestamp().toNanos()) + "");
+//        testCtrl.getActualFrame();
     }
 
 
@@ -176,7 +182,9 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
 
     @Override
     public void TestAction() {
-        testCtrl.testAction();
+//        testCtrl.testAction();
+
+        logger.info(videoInfo.toString());
     }
 
 
@@ -196,13 +204,18 @@ public class VideoPlayerCtrl implements IVideoPlayerCtrl {
     @Override
     public void seek(long number) {
         logger.info("Seek to '" + number + "'");
-        SeekEvent seek = new SeekEvent(1.0, Format.TIME,SeekFlags.FLUSH , SeekType.SET , number, SeekType.NONE, -1);
-        if(pb2.sendEvent(seek)){
-            logger.debug("Seek to '"+number+"' was successful");
+        SeekEvent seek = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, number, SeekType.NONE, -1);
+        if (pb2.sendEvent(seek)) {
+            logger.debug("Seek to '" + number + "' was successful");
+        } else {
+            logger.warn("Seek to '" + number + "' was unsuccessful");
         }
-        else{
-          logger.warn("Seek to '"+number+"' was unsuccessful");
-      }
+    }
+
+
+    @Override
+    public void videoInfo() {
+
     }
 
 //    @Override

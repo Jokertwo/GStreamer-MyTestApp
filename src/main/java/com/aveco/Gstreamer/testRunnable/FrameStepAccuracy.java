@@ -29,13 +29,25 @@ public class FrameStepAccuracy extends AbstractTest {
         
         getPlayBin().pause();
         logger.info("Video was paused");
-        
-        while (isRunnig()) {
+        sleep(200);
+        saveImage(FRAME_STEP, FrameStepAccuracy.class.getName(), getPanel(), getValues());
+        sleep(200);
+        for(int i = 0 ; i < 100 ; i ++) {
+            
+            gettCtrl().stepForward(5);
             sleep(200);
-            gettCtrl().stepForward(1);
+            gettCtrl().stepForward(5);
             sleep(200);
-            saveImage(FRAME_STEP, FrameStepAccuracy.class.getName(), getPanel(), getValues());
+            gettCtrl().stepForward(5);
+            sleep(200);
+            gettCtrl().stepBack(5);
+            sleep(200);
+            gettCtrl().stepBack(5);
+            sleep(200);
+            gettCtrl().stepBack(5);
+            sleep(200);
         }
+        saveImage(FRAME_STEP, FrameStepAccuracy.class.getName(), getPanel(), getValues());
         getPlayBin().pause();
         logger.info("End of test 'FrameAccuracy'");
 

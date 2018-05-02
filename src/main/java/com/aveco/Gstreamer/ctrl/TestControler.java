@@ -14,15 +14,15 @@ import org.freedesktop.gstreamer.Segment;
 import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.event.SeekEvent;
-import org.freedesktop.gstreamer.event.StepEvent;
 import org.freedesktop.gstreamer.query.SeekingQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
 import com.aveco.Gstreamer.playBin.SimpleVideoComponent;
-import com.aveco.Gstreamer.tag.TagInfo;
 import com.aveco.Gstreamer.testRunnable.AbstractTest;
+import com.aveco.Gstreamer.testRunnable.PlayFrameTest;
 import com.aveco.Gstreamer.testRunnable.SteppingFrontBack;
+import com.aveco.Gstreamer.videoInfo.VideoInfo;
 
 
 public class TestControler implements ITestControler {
@@ -34,26 +34,29 @@ public class TestControler implements ITestControler {
     private ExecutorService executor;
     private List<AbstractTest> tests;
     private SeekingQuery q;
+    private VideoInfo videoInfo;
 
 
-    public TestControler(IVideoPlayer videoPlayer) {
+    public TestControler(IVideoPlayer videoPlayer, VideoInfo videoInfo) {
         super();
         this.playBin = videoPlayer.getPlayBin();
         this.vCmp = videoPlayer.getSimpleVideoCompoment();
         executor = Executors.newSingleThreadExecutor();
         q = new SeekingQuery(Format.TIME);
         tests = new ArrayList<>();
+        this.videoInfo = videoInfo;
     }
 
 
     @Override
     public Sample getSample() {
-        Sample sample;
-        if (!playBin.getState().equals(State.PLAYING)) {
-            sample = vCmp.getAppSink().pullPreroll();
+        Sample sample = null;
+        if (!vCmp.getAppSink().isEOS()) {
+            if (!playBin.getState().equals(State.PLAYING)) {
+                sample = vCmp.getAppSink().pullPreroll();
+            }
         } else {
-            sample = null;
-//            sample = vCmp.getAppSink().getLastBuffer();
+            logger.error("EOS exception");
         }
         return sample;
     }
@@ -109,7 +112,7 @@ public class TestControler implements ITestControler {
     public String getActualFrame() {
         Buffer buf = getBuffer();
         String actualFrame = "Actual frame: "
-                + actualFrame(buf.getPresentationTimestamp().toNanos(), buf.getDuration().toNanos());
+                + videoInfo.getNumberOfFrame(buf.getPresentationTimestamp().toNanos());
         logger.debug(actualFrame);
         return actualFrame;
     }
@@ -158,7 +161,8 @@ public class TestControler implements ITestControler {
         logger.trace("Add tests to executor");
 //        HMSFAccuracy hmsfAcc = new HMSFAccuracy(this, playBin, vCmp);
 //        FrameStepAccuracy frameAcc = new FrameStepAccuracy(this, playBin, vCmp);
-        SteppingFrontBack stepping = new SteppingFrontBack(this, playBin, vCmp);
+//        AbstractTest stepping = new SteppingFrontBack(this, playBin, vCmp);
+        AbstractTest stepping = new PlayFrameTest(this, playBin, vCmp);
         tests.add(stepping);
         executor.execute(stepping);
     }
@@ -200,20 +204,26 @@ public class TestControler implements ITestControler {
     @Override
     public void stepForward(int count) {
         logger.debug("Step " + count + " frame/s forward");
-        if (!playBin
-            .sendEvent(new StepEvent(Format.TIME, getBuffer().getDuration().toNanos() + 1, count, true, false))) {
+//        if (!playBin
+//            .sendEvent(new StepEvent(Format.TIME, getBuffer().getDuration().toNanos() + 1, count, true, false))) {
+//            stopTest();
+//            logger.error("Error during step forward");
+//        }
+
+        long positon = getBuffer().getPresentationTimestamp().toNanos();
+        long frame = videoInfo.getNumberOfFrame(positon);
+        long newPosition = videoInfo.getPositionOfFrame(frame + count);
+
+        logger.trace("New position: " + newPosition);
+        SeekEvent step = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, newPosition, SeekType.NONE,
+            -1);
+
+        if (!playBin.sendEvent(step)) {
             stopTest();
             logger.error("Error during step forward");
+        } else {
+            logger.trace("Step forward was succesfull");
         }
-
-//        Segment seg = playBin.querySegment();
-//
-//        long startSegment = getBuffer().getPresentationTimestamp().toNanos()
-//                + ((getBuffer().getDuration().toNanos()) * count);
-//        if (normalizeWayToPlay(startSegment, seg.getStopValue())) {
-//            logger.debug("Stepf forward was succesfull");
-//        }
-//        normalizeWayToPlay(seg.getStartValue(),seg.getStartValue());
     }
 
 
@@ -234,32 +244,28 @@ public class TestControler implements ITestControler {
      */
     @Override
     public void stepBack(int count) {
-//        Segment seg = playBin.querySegment();
-//        logger.debug("Step " + count + " frame/s back");
-//        long start = getBuffer().getPresentationTimestamp().toNanos()
-//                - ((getBuffer().getDuration().toNanos() * count) - 1);
-//        SeekEvent step = new SeekEvent(-1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, 0, SeekType.SET, start);
-//        if (!playBin.sendEvent(step)) {
-//            stopTest();
-//            logger.error("Error during step back");
-//        }
-//        if (normalizeWayToPlay(start, seg.getStopValue())) {
-//            logger.debug("Stepf back was succesfull");
-//        }
-        
-        Segment seg = playBin.querySegment();
 
-        long start = getBuffer().getPresentationTimestamp().toNanos()
-                - (getBuffer().getDuration().toNanos() * count);
-        if (normalizeWayToPlay(start, seg.getStopValue())) {
-            logger.debug("Stepf forward was succesfull");
+        logger.debug("Step " + count + " frame/s back");
+        long positon = getBuffer().getPresentationTimestamp().toNanos();
+        long frame = videoInfo.getNumberOfFrame(positon);
+        long newPosition = videoInfo.getPositionOfFrame(frame - count > 0 ? frame - count : 0);
+        logger.trace("New position: " + newPosition);
+        SeekEvent step = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, newPosition, SeekType.NONE,
+            -1);
+
+        if (!playBin.sendEvent(step)) {
+            stopTest();
+            logger.error("Error during step back");
+        } else {
+            logger.trace("Step back was succesfull");
         }
+
     }
 
 
     @Override
     public void testAction() {
-        logger.info(TagInfo.getInstance().toString());
+//        logger.info(VideoInfo.getInstance().toString());
     }
 
 

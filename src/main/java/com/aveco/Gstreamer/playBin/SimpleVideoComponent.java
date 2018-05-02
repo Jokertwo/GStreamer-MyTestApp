@@ -55,6 +55,10 @@ import org.freedesktop.gstreamer.elements.AppSink;
  */
 public class SimpleVideoComponent extends javax.swing.JComponent {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private BufferedImage currentImage = null;
     private final Lock bufferLock = new ReentrantLock();
     private final AppSink videosink;
@@ -229,7 +233,7 @@ public class SimpleVideoComponent extends javax.swing.JComponent {
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             if (currentImage != null) {
-                GraphicsConfiguration gc = getGraphicsConfiguration();
+//                GraphicsConfiguration gc = getGraphicsConfiguration();
                 render(g2d, 0, 0, width, height);
             } else {
                 g2d.setColor(getBackground());
@@ -449,7 +453,7 @@ public class SimpleVideoComponent extends javax.swing.JComponent {
             int w = capsStruct.getInteger("width");
             int h = capsStruct.getInteger("height");
             Buffer buffer = sample.getBuffer();
-//            System.out.println(buffer.getDuration().toNanos());
+            System.out.println(buffer.getPresentationTimestamp().toNanos());
             ByteBuffer bb = buffer.map(false);
             if (bb != null) {
                 rgbFrame(false, w, h, bb.asIntBuffer());
@@ -466,7 +470,7 @@ public class SimpleVideoComponent extends javax.swing.JComponent {
             Structure capsStruct = sample.getCaps().getStructure(0);
             int w = capsStruct.getInteger("width");
             int h = capsStruct.getInteger("height");
-            Buffer buffer = sample.getBuffer();           
+            Buffer buffer = sample.getBuffer();
             ByteBuffer bb = buffer.map(false);
             if (bb != null) {
                 rgbFrame(false, w, h, bb.asIntBuffer());
