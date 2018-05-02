@@ -1,13 +1,15 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
-public class Time implements CtrlAction {
-    private IVideoPlayerCtrl ctrl;
+@SuppressWarnings("serial")
+public class Time extends AbstractCtrlAction {
+    private VideoPlayerCtrl ctrl;
 
 
-    public Time(IVideoPlayerCtrl ctrl) {
+    public Time(VideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -24,6 +26,13 @@ public class Time implements CtrlAction {
     public String help() {
         // TODO Auto-generated method stub
         return "Info about time";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.err.println("Unimplemented!!!");
+        
     }
 
 }

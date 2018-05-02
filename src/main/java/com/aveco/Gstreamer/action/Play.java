@@ -1,15 +1,17 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
-public class Play implements CtrlAction {
+@SuppressWarnings("serial")
+public class Play extends AbstractCtrlAction {
 
-    private IVideoPlayerCtrl ctrl;
+    private VideoPlayerCtrl ctrl;
 
 
-    public Play(IVideoPlayerCtrl ctrl) {
-        super();
+    public Play(VideoPlayerCtrl ctrl) {
+        super(">");
         this.ctrl = ctrl;
     }
 
@@ -24,6 +26,12 @@ public class Play implements CtrlAction {
     public String help() {
         // TODO Auto-generated method stub
         return "Play video";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        ctrl.play();       
     }
 
 }

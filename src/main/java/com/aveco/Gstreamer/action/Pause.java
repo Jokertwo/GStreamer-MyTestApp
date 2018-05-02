@@ -1,14 +1,16 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
-public class Pause implements CtrlAction {
+@SuppressWarnings("serial")
+public class Pause extends AbstractCtrlAction {
 
     
-    private IVideoPlayerCtrl ctrl;
+    private VideoPlayerCtrl ctrl;
     
-    public Pause(IVideoPlayerCtrl ctrl) {
-        super();
+    public Pause(VideoPlayerCtrl ctrl) {
+        super("||");
         this.ctrl = ctrl;
     }
 
@@ -21,6 +23,11 @@ public class Pause implements CtrlAction {
     public String help() {
         // TODO Auto-generated method stub
         return "Pause video";
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        ctrl.pause();        
     }
 
 }

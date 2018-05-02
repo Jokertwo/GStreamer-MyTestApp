@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.ctrl.TestControler;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrlImpl;
+import com.aveco.Gstreamer.gui.ButtonPanel;
 import com.aveco.Gstreamer.gui.CommandTextField;
 import com.aveco.Gstreamer.gui.LogInfo;
 import com.aveco.Gstreamer.gui.MyGWindow;
@@ -47,13 +49,14 @@ public class Main {
 
     }
 
-    public static final String PATH = PATHS[2];
+    public static final String PATH = PATHS[6];
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private LogInfo logInfo;
     private IVideoPlayer videoPlayer;
     private VideoInfo videoInfo;
     private ExecutorService executor;
+    private VideoPlayerCtrl ctrlVideo;
 
 
     public Main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
@@ -72,6 +75,7 @@ public class Main {
         Future<IVideoPlayer> futureVideo = executor.submit(new VideoPlayer(getURI()));
         executor.execute(new ParseVideoPlayBinTag(getURI(), videoInfo));
         executor.execute(new ParseVideoPlayBinFindEnd(getURI(), videoInfo));
+
         try {
             videoPlayer = futureVideo.get();
             if (videoPlayer == null) {
@@ -81,15 +85,15 @@ public class Main {
             e.printStackTrace();
         }
 
-        executor.execute(
-            new CommandLine(new VideoPlayerCtrl(videoPlayer, new TestControler(videoPlayer, videoInfo), videoInfo),
-                commandBuffer));
+        ctrlVideo = new VideoPlayerCtrlImpl(videoPlayer, new TestControler(videoPlayer, videoInfo), videoInfo);
+
+        executor.execute(new CommandLine(ctrlVideo, commandBuffer));
 
         // start gui
         SwingUtilities.invokeLater(() -> {
             JPanel panel = new JPanel(new BorderLayout());
             panel.add(videoPlayer.getSimpleVideoCompoment(), BorderLayout.CENTER);
-            new MyGWindow(panel, logInfo, new CommandTextField(commandBuffer));
+            new MyGWindow(panel, logInfo, new CommandTextField(commandBuffer), new ButtonPanel(ctrlVideo));
         });
 
         executor.shutdown();

@@ -1,12 +1,14 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
-public class Sleep implements CtrlAction {
+@SuppressWarnings("serial")
+public class Sleep extends AbstractCtrlAction {
 
-    private IVideoPlayerCtrl ctrl;
+    private VideoPlayerCtrl ctrl;
     
-    public Sleep(IVideoPlayerCtrl ctrl) {
+    public Sleep(VideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -21,6 +23,13 @@ public class Sleep implements CtrlAction {
     @Override
     public String help() {
        return "Pause between executing the command (500ms)";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.err.println("Unimplemented!!!");
+        
     }
 
 }

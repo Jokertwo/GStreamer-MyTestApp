@@ -1,18 +1,20 @@
 package com.aveco.Gstreamer.action;
 
+import java.awt.event.ActionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
-public class StepForward implements CtrlAction {
+@SuppressWarnings("serial")
+public class StepForward extends AbstractCtrlAction {
 
-    private IVideoPlayerCtrl ctrl;
+    private VideoPlayerCtrl ctrl;
     private static final Logger logger = LoggerFactory.getLogger(StepForward.class);
 
 
-    public StepForward(IVideoPlayerCtrl ctrl) {
-        super();
+    public StepForward(VideoPlayerCtrl ctrl) {
+        super(">|");
         this.ctrl = ctrl;
     }
 
@@ -34,6 +36,12 @@ public class StepForward implements CtrlAction {
     public String help() {
         // TODO Auto-generated method stub
         return "Perform one frame step forward (default 1 or value of argument)";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        ctrl.stepForward(1);
     }
 
 }

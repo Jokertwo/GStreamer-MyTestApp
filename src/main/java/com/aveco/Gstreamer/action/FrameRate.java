@@ -1,13 +1,15 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
-public class FrameRate implements CtrlAction {
-    private IVideoPlayerCtrl ctrl;
+@SuppressWarnings("serial")
+public class FrameRate extends AbstractCtrlAction {
+    private VideoPlayerCtrl ctrl;
 
 
-    public FrameRate(IVideoPlayerCtrl ctrl) {
+    public FrameRate(VideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -23,6 +25,12 @@ public class FrameRate implements CtrlAction {
     public String help() {
         // TODO Auto-generated method stub
         return "Video frame rate";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.err.println("Unimplemented!!!"); 
     }
 
 }

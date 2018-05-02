@@ -1,15 +1,17 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
-public class End implements CtrlAction {
 
-    
-    private IVideoPlayerCtrl ctrl; 
-    
-    
-    public End(IVideoPlayerCtrl ctrl) {
-        super();
+@SuppressWarnings("serial")
+public class End extends AbstractCtrlAction {
+
+    private VideoPlayerCtrl ctrl;
+
+
+    public End(VideoPlayerCtrl ctrl) {
+        super(">>|");
         this.ctrl = ctrl;
     }
 
@@ -24,6 +26,12 @@ public class End implements CtrlAction {
     public String help() {
         // TODO Auto-generated method stub
         return "Rewind to end";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        ctrl.rewindToEnd();
     }
 
 }

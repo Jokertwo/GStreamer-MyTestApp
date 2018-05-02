@@ -1,14 +1,15 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
-public class ActualFrame implements CtrlAction {
-    private IVideoPlayerCtrl ctrl;
+@SuppressWarnings("serial")
+public class ActualFrame extends AbstractCtrlAction {
+    private VideoPlayerCtrl ctrl;
 
 
-    public ActualFrame(IVideoPlayerCtrl ctrl) {
-        super();
+    public ActualFrame(VideoPlayerCtrl ctrl) {
         this.ctrl = ctrl;
     }
 
@@ -23,6 +24,12 @@ public class ActualFrame implements CtrlAction {
     public String help() {
         return "Print number of actual frame";
 
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.err.println("Unimplemented!!!");
     }
 
 }

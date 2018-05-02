@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.action.ActualFrame;
 import com.aveco.Gstreamer.action.BufferInfo;
-import com.aveco.Gstreamer.action.CtrlAction;
+import com.aveco.Gstreamer.action.Action;
 import com.aveco.Gstreamer.action.TestAction;
 import com.aveco.Gstreamer.action.End;
 import com.aveco.Gstreamer.action.Exit;
@@ -27,7 +27,7 @@ import com.aveco.Gstreamer.action.StepForward;
 import com.aveco.Gstreamer.action.StopTest;
 import com.aveco.Gstreamer.action.Time;
 import com.aveco.Gstreamer.action.TimeCode;
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
 public class CommandLine implements Runnable {
@@ -35,11 +35,11 @@ public class CommandLine implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(CommandLine.class);
 
     private final String help = "man";
-    private Map<String, CtrlAction> actions;
+    private Map<String, Action> actions;
     private CommandBuffer buffer;
 
 
-    public CommandLine(IVideoPlayerCtrl ctrl, CommandBuffer buffer) {
+    public CommandLine(VideoPlayerCtrl ctrl, CommandBuffer buffer) {
         super();
         this.buffer = buffer;
         initActions(ctrl);
@@ -79,7 +79,7 @@ public class CommandLine implements Runnable {
 
 
     private void printHelp() {
-        for (Map.Entry<String, CtrlAction> entry : actions.entrySet()) {
+        for (Map.Entry<String, Action> entry : actions.entrySet()) {
             logger.info(entry.getKey() + "\t" + entry.getValue().help());
         }
     }
@@ -91,7 +91,7 @@ public class CommandLine implements Runnable {
     }
 
 
-    private void initActions(IVideoPlayerCtrl ctrl) {
+    private void initActions(VideoPlayerCtrl ctrl) {
         actions = new TreeMap<>();
         actions.put("pl", new Play(ctrl));
         actions.put("ps", new Pause(ctrl));

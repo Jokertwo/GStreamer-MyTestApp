@@ -1,15 +1,20 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
-public class Exit implements CtrlAction {
+public class Exit extends AbstractCtrlAction {
 
-    private IVideoPlayerCtrl ctrl;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private VideoPlayerCtrl ctrl;
 
 
-    public Exit(IVideoPlayerCtrl ctrl) {
-        super();
+    public Exit(VideoPlayerCtrl ctrl) {
+        super("Exit");
         this.ctrl = ctrl;
     }
 
@@ -24,6 +29,12 @@ public class Exit implements CtrlAction {
     public String help() {
         // TODO Auto-generated method stub
         return "Close application";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        ctrl.exit();      
     }
 
 }

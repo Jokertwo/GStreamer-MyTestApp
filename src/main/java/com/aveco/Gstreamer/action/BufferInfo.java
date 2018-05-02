@@ -1,18 +1,20 @@
 package com.aveco.Gstreamer.action;
 
+import java.awt.event.ActionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
-public class BufferInfo implements CtrlAction {
+@SuppressWarnings("serial")
+public class BufferInfo extends AbstractCtrlAction {
 
-    private IVideoPlayerCtrl ctrl;
+    private VideoPlayerCtrl ctrl;
     public static final Logger logger = LoggerFactory.getLogger(BufferInfo.class);
 
 
-    public BufferInfo(IVideoPlayerCtrl ctrl) {
-        super();
+    public BufferInfo(VideoPlayerCtrl ctrl) {
+        super("Buf info");
         this.ctrl = ctrl;
     }
 
@@ -27,6 +29,13 @@ public class BufferInfo implements CtrlAction {
     public String help() {
         // TODO Auto-generated method stub
         return "Print some information from buffer";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.err.println("Unimplemented!!!");
+
     }
 
 }

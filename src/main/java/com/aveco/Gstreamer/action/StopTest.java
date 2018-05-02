@@ -1,14 +1,16 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
-public class StopTest implements CtrlAction {
+@SuppressWarnings("serial")
+public class StopTest extends AbstractCtrlAction {
 
-    private IVideoPlayerCtrl ctrl;
+    private VideoPlayerCtrl ctrl;
 
 
-    public StopTest(IVideoPlayerCtrl ctrl) {
+    public StopTest(VideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -23,6 +25,13 @@ public class StopTest implements CtrlAction {
     @Override
     public String help() {
         return "Stop all tests";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.err.println("Unimplemented!!!");
+        
     }
 
 }

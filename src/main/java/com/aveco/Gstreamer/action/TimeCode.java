@@ -1,11 +1,15 @@
 package com.aveco.Gstreamer.action;
 
-import com.aveco.Gstreamer.ctrl.IVideoPlayerCtrl;
+import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
-public class TimeCode implements CtrlAction {
-    private IVideoPlayerCtrl ctrl; 
-    
-    public TimeCode(IVideoPlayerCtrl ctrl) {
+
+@SuppressWarnings("serial")
+public class TimeCode extends AbstractCtrlAction {
+    private VideoPlayerCtrl ctrl;
+
+
+    public TimeCode(VideoPlayerCtrl ctrl) {
         super();
         this.ctrl = ctrl;
     }
@@ -21,6 +25,12 @@ public class TimeCode implements CtrlAction {
     public String help() {
         // TODO Auto-generated method stub
         return "Print actual timeCode";
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.err.println("Unimplemented!!!");       
     }
 
 }
