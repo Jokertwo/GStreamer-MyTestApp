@@ -1,20 +1,25 @@
 package com.aveco.Gstreamer.action;
 
 import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.CommandBuffer;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
+@SuppressWarnings("serial")
 public class Exit extends AbstractCtrlAction {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
     private VideoPlayerCtrl ctrl;
+    private CommandBuffer commandBuffer;
+
+
+    public Exit(VideoPlayerCtrl ctrl, CommandBuffer commandBuffer) {
+        super("Exit");
+        this.ctrl = ctrl;
+        this.commandBuffer = commandBuffer;
+    }
 
 
     public Exit(VideoPlayerCtrl ctrl) {
-        super("Exit");
         this.ctrl = ctrl;
     }
 
@@ -34,7 +39,7 @@ public class Exit extends AbstractCtrlAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ctrl.exit();      
+        commandBuffer.addCommand(ActionConstant.EXIT);
     }
 
 }

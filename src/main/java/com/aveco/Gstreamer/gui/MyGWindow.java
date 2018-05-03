@@ -15,14 +15,14 @@ public class MyGWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setTitle("GWindow");
-        add(videoPlayer, "pushx,growx,h 50%,wrap");
+        add(videoPlayer, "push,grow,wrap");
         add(buttons,"pushx,growx,wrap");
-        add(logPanel, "pushx,growx,h 50%,wrap");
+//        add(logPanel, "pushx,growx,h 50%,wrap");
         add(field, "pushx,growx");
         setPreferredSize(new Dimension(600, 500));
         pack();
         setVisible(true);
-        setAlwaysOnTop(true);
+//        setAlwaysOnTop(true);
         field.grabFocus();
     }
 

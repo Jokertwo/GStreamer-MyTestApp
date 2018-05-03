@@ -172,7 +172,6 @@ public class VideoInfoImpl implements VideoInfo {
         sb.append(bRate + ":\t" + getBitRate() + "\n");
         sb.append("frame rate" + ":\t" + frameRate + "\n");
         sb.append("VideoType" + ":\t" + videoType);
-        frameTool.printDur();
         return sb.toString();
     }
 

@@ -30,7 +30,6 @@ public class ParseVideoPlayBinTag implements ParseVideo {
     }
 
 
-
     public synchronized void run() {
         logger.info("Thread for get TAG -> start");
         if (Gst.isInitialized()) {
@@ -50,7 +49,7 @@ public class ParseVideoPlayBinTag implements ParseVideo {
 
             playBin.getBus().connect(tag);
             playBin.getBus().connect(asyn);
-            sleep(200);
+            sleep(200, logger);
             playBin.setState(State.PAUSED);
             try {
                 wait();
@@ -59,20 +58,10 @@ public class ParseVideoPlayBinTag implements ParseVideo {
             }
         } else {
             logger.error("GStreamer is not inicialized");
-            
+
         }
         logger.info("Thread for get TAG -> end");
-        
-    }
 
-
-    private void sleep(int count) {
-        try {
-            Thread.sleep(count);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
 

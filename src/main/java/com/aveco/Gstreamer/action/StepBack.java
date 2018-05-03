@@ -3,6 +3,7 @@ package com.aveco.Gstreamer.action;
 import java.awt.event.ActionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.aveco.Gstreamer.CommandBuffer;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
@@ -11,10 +12,18 @@ public class StepBack extends AbstractCtrlAction {
 
     private VideoPlayerCtrl ctrl;
     private static final Logger logger = LoggerFactory.getLogger(StepBack.class);
+    private CommandBuffer commandBuffer;
+
+
+    public StepBack(VideoPlayerCtrl ctrl, CommandBuffer commandBuffer) {
+        super("|<");
+        this.ctrl = ctrl;
+        this.commandBuffer = commandBuffer;
+    }
 
 
     public StepBack(VideoPlayerCtrl ctrl) {
-        super("|<");
+
         this.ctrl = ctrl;
     }
 
@@ -42,7 +51,7 @@ public class StepBack extends AbstractCtrlAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ctrl.stepBack(1);
+        commandBuffer.addCommand(ActionConstant.STEP_BACK);
     }
 
 }

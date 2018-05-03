@@ -3,6 +3,7 @@ package com.aveco.Gstreamer.action;
 import java.awt.event.ActionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.aveco.Gstreamer.CommandBuffer;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
@@ -10,11 +11,19 @@ import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 public class StepForward extends AbstractCtrlAction {
 
     private VideoPlayerCtrl ctrl;
+    private CommandBuffer commandBuffer;
     private static final Logger logger = LoggerFactory.getLogger(StepForward.class);
 
 
-    public StepForward(VideoPlayerCtrl ctrl) {
+    public StepForward(VideoPlayerCtrl ctrl, CommandBuffer commandBuffer) {
         super(">|");
+        this.ctrl = ctrl;
+        this.commandBuffer = commandBuffer;
+    }
+
+
+    public StepForward(VideoPlayerCtrl ctrl) {
+
         this.ctrl = ctrl;
     }
 
@@ -34,14 +43,13 @@ public class StepForward extends AbstractCtrlAction {
 
     @Override
     public String help() {
-        // TODO Auto-generated method stub
         return "Perform one frame step forward (default 1 or value of argument)";
     }
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ctrl.stepForward(1);
+        commandBuffer.addCommand(ActionConstant.STEP_FRONT);
     }
 
 }

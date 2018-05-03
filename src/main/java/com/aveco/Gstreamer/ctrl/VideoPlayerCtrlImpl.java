@@ -144,7 +144,6 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
     @Override
     public void exit() {
         logger.info("App will be close");
-        buffer.addCommand("finish");
         shutDownExecutor();
         testCtrl.shotDown();
         pb2.setState(State.NULL);
@@ -191,8 +190,6 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
     @Override
     public void TestAction() {
-//        testCtrl.testAction();
-
         logger.info(videoInfo.toString());
     }
 
@@ -243,9 +240,6 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
         try {
             logger.info("attempt to shutdown executor");
             executor.shutdown();
-            executor.awaitTermination(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-           logger.error("tasks interrupted");
         } finally {
             if (!executor.isTerminated()) {
                 logger.error("cancel non-finished tasks");

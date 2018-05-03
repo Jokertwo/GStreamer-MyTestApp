@@ -44,6 +44,7 @@ public class ParseVideoPlayBinFindEnd implements ParseVideo {
                 playBin.setState(State.PLAYING);
             };
             playBin.getBus().connect(asyn);
+            sleep(200, logger);
             playBin.setState(State.PAUSED);
             try {
                 wait();

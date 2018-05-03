@@ -1,16 +1,23 @@
 package com.aveco.Gstreamer.action;
 
 import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.CommandBuffer;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 @SuppressWarnings("serial")
 public class Start extends AbstractCtrlAction {
 
     private VideoPlayerCtrl ctrl;
+    private CommandBuffer commandBuffer;
     
-    
-    public Start(VideoPlayerCtrl ctrl) {
+    public Start(VideoPlayerCtrl ctrl, CommandBuffer commandBuffer) {
         super("|<<");
+        this.ctrl = ctrl;
+        this.commandBuffer = commandBuffer;
+    }
+
+
+    public Start(VideoPlayerCtrl ctrl) {
         this.ctrl = ctrl;
     }
 
@@ -30,7 +37,7 @@ public class Start extends AbstractCtrlAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ctrl.rewindToStart();       
+        commandBuffer.addCommand(ActionConstant.START);     
     }
     
     

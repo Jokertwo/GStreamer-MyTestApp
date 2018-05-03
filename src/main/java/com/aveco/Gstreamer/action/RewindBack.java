@@ -3,6 +3,7 @@ package com.aveco.Gstreamer.action;
 import java.awt.event.ActionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.aveco.Gstreamer.CommandBuffer;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
@@ -13,9 +14,19 @@ public class RewindBack extends AbstractCtrlAction {
 
     private static final Logger logger = LoggerFactory.getLogger(RewindBack.class);
 
+    private CommandBuffer commandBuffer;
+    
+   
 
-    public RewindBack(VideoPlayerCtrl ctrl) {
+
+    public RewindBack(VideoPlayerCtrl ctrl, CommandBuffer commandBuffer) {
         super("<<");
+        this.ctrl = ctrl;
+        this.commandBuffer = commandBuffer;
+    }
+
+
+    public RewindBack(VideoPlayerCtrl ctrl) {        
         this.ctrl = ctrl;
     }
 
@@ -43,7 +54,7 @@ public class RewindBack extends AbstractCtrlAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ctrl.rewindOneBack(1);       
+        commandBuffer.addCommand(ActionConstant.MINU1);       
     }
 
 }

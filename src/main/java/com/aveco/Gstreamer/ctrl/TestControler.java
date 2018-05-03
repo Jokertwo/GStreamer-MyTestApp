@@ -167,7 +167,7 @@ public class TestControler implements ITestControler {
 
     @Override
     public void shotDown() {
-        executor.shutdown();
+        shutDownExecutor();
     }
 
 
@@ -319,6 +319,21 @@ public class TestControler implements ITestControler {
     public void setVideoInfo(VideoInfo videoInfo) {
         this.videoInfo = videoInfo;
 
+    }
+
+
+    private void shutDownExecutor() {
+        try {
+            logger.info("attempt to shutdown executor");
+            executor.shutdown();
+
+        } finally {
+            if (!executor.isTerminated()) {
+                logger.error("cancel non-finished tasks");
+            }
+            executor.shutdownNow();
+            logger.info("shutdown finished");
+        }
     }
 
 }

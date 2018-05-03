@@ -1,6 +1,7 @@
 package com.aveco.Gstreamer.action;
 
 import java.awt.event.ActionEvent;
+import com.aveco.Gstreamer.CommandBuffer;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 
 
@@ -8,10 +9,18 @@ import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 public class Play extends AbstractCtrlAction {
 
     private VideoPlayerCtrl ctrl;
+    private CommandBuffer commandBuffer;
+
+
+    public Play(VideoPlayerCtrl ctrl, CommandBuffer commandBuffer) {
+        super(">");
+        this.ctrl = ctrl;
+        this.commandBuffer = commandBuffer;
+    }
 
 
     public Play(VideoPlayerCtrl ctrl) {
-        super(">");
+
         this.ctrl = ctrl;
     }
 
@@ -31,7 +40,7 @@ public class Play extends AbstractCtrlAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ctrl.play();       
+        commandBuffer.addCommand(ActionConstant.PLAY);
     }
 
 }

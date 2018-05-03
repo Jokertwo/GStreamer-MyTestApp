@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import com.aveco.Gstreamer.CommandBuffer;
 import com.aveco.Gstreamer.action.AbstractCtrlAction;
 import com.aveco.Gstreamer.action.End;
 import com.aveco.Gstreamer.action.Exit;
@@ -25,25 +26,26 @@ public class ButtonPanel extends JPanel {
     private List<JButton> buttons;
 
 
-    public ButtonPanel(JButton fileChooser, VideoPlayerCtrl videoCtrl) {
+    public ButtonPanel(JButton fileChooser, VideoPlayerCtrl videoCtrl,CommandBuffer commandBuffer) {
         buttons = new ArrayList<>();
         setLayout(new MigLayout());
         add(fileChooser, migC);
-        add(createButton(new Start(videoCtrl)), migC);
-        add(createButton(new RewindBack(videoCtrl)), migC);
-        add(createButton(new StepBack(videoCtrl)), migC);
-        add(createButton(new Play(videoCtrl)), migC);
-        add(createButton(new Pause(videoCtrl)), migC);
-        add(createButton(new StepForward(videoCtrl)), migC);
-        add(createButton(new RewindFront(videoCtrl)), migC);
-        add(createButton(new End(videoCtrl)), migC);
-        add(createButton(new Exit(videoCtrl)), migC);
+        add(createButton(new Start(videoCtrl,commandBuffer)), migC);
+        add(createButton(new RewindBack(videoCtrl,commandBuffer)), migC);
+        add(createButton(new StepBack(videoCtrl,commandBuffer)), migC);
+        add(createButton(new Play(videoCtrl,commandBuffer)), migC);
+        add(createButton(new Pause(videoCtrl,commandBuffer)), migC);
+        add(createButton(new StepForward(videoCtrl,commandBuffer)), migC);
+        add(createButton(new RewindFront(videoCtrl,commandBuffer)), migC);
+        add(createButton(new End(videoCtrl,commandBuffer)), migC);
+        add(createButton(new Exit(videoCtrl,commandBuffer)), migC);
     }
 
 
     private JButton createButton(AbstractCtrlAction action) {
         JButton btn = new JButton(action);
         btn.setToolTipText(action.help());
+        btn.setEnabled(false);
         buttons.add(btn);
         return btn;
     }

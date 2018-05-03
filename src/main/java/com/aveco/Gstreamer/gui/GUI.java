@@ -6,9 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import com.aveco.Gstreamer.CommandBuffer;
 import com.aveco.Gstreamer.VideoProcess;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
@@ -25,6 +28,7 @@ public class GUI {
     private ButtonPanel buttonPanel;
     private JPanel rootPanel;
     private VideoProcess procces;
+    private JFrame window;
 
     private static final String videoS = "video";
     private static final String proccesS = "process";
@@ -51,7 +55,7 @@ public class GUI {
         // start gui
         SwingUtilities.invokeLater(() -> {
 
-            buttonPanel = new ButtonPanel(fileChooser(), ctrlVideo);
+            buttonPanel = new ButtonPanel(fileChooser(), ctrlVideo, commandBuffer);
 
             rootPanel = new JPanel(cl);
 
@@ -62,7 +66,7 @@ public class GUI {
             rootPanel.add(new Proccesing(), proccesS);
             cl.show(rootPanel, videoS);
 
-            new MyGWindow(rootPanel, logInfo, new CommandTextField(commandBuffer), buttonPanel);
+            window = new MyGWindow(rootPanel, logInfo, new CommandTextField(commandBuffer), buttonPanel);
         });
     }
 
@@ -71,9 +75,13 @@ public class GUI {
         JButton fileChooserBtn = new JButton("File");
         fileChooserBtn.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            FileFilter filter = new FileNameExtensionFilter("Only video", "mp4", "m2v", "avi", "mkv", "mov");
+            fileChooser.addChoosableFileFilter(filter);
             int returnValue = fileChooser.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 timer();
+                window.setTitle(fileChooser.getSelectedFile().getName());
                 procces.preprocess(fileChooser.getSelectedFile().toURI());
             }
         });
@@ -87,6 +95,7 @@ public class GUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cl.show(rootPanel, videoS);
+                buttonPanel.setEnableBtn(true);
             }
         });
         t.setRepeats(false);

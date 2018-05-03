@@ -38,6 +38,8 @@ public class FrameTool implements IFrameTool {
                         return newFrame;
                     case NTSC_DROP:
                         return oldFrame;
+                    case NTSC_NON_DROP:
+                        return oldFrame;
                     default:
                         return -1;
                 }
