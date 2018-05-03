@@ -36,7 +36,7 @@ public class FrameTool implements IFrameTool {
                 switch (videoType) {
                     case PAL:
                         return newFrame;
-                    case NTSC:
+                    case NTSC_DROP:
                         return oldFrame;
                     default:
                         return -1;

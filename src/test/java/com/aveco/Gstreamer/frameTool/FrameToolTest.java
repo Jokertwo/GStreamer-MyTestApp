@@ -31,18 +31,18 @@ public class FrameToolTest {
     @Test
     public void testNTSCGetNumberOfFrameA() {
         prepare(NTSC_H_264_A);
-        assertEquals(0, frame.getNumberOfFrame(33366665L, VideoType.NTSC));
-        assertEquals(1, frame.getNumberOfFrame(33366666L, VideoType.NTSC));
-        assertEquals(1, frame.getNumberOfFrame(33366667L, VideoType.NTSC));
+        assertEquals(0, frame.getNumberOfFrame(33366665L, VideoType.NTSC_DROP));
+        assertEquals(1, frame.getNumberOfFrame(33366666L, VideoType.NTSC_DROP));
+        assertEquals(1, frame.getNumberOfFrame(33366667L, VideoType.NTSC_DROP));
     }
 
 
     @Test
     public void testNTSCGetPositionOfFrame() {
         prepare(NTSC_H_264_A);
-        assertEquals(33366666L, frame.getPositionOfFrame(1L, VideoType.NTSC));
-        assertEquals(0L, frame.getPositionOfFrame(0L, VideoType.NTSC));
-        assertEquals(1101100000L, frame.getPositionOfFrame(33L, VideoType.NTSC));
+        assertEquals(33366666L, frame.getPositionOfFrame(1L, VideoType.NTSC_DROP));
+        assertEquals(0L, frame.getPositionOfFrame(0L, VideoType.NTSC_DROP));
+        assertEquals(1101100000L, frame.getPositionOfFrame(33L, VideoType.NTSC_DROP));
     }
 
     @Test

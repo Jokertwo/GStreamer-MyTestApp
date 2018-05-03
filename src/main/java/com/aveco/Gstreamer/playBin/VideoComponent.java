@@ -53,7 +53,7 @@ import org.freedesktop.gstreamer.elements.AppSink;
 /**
  *
  */
-public class SimpleVideoComponent extends javax.swing.JComponent {
+public class VideoComponent extends javax.swing.JComponent {
 
     /**
      * 
@@ -75,7 +75,7 @@ public class SimpleVideoComponent extends javax.swing.JComponent {
     /**
      * Creates a new instance of GstVideoComponent
      */
-    public SimpleVideoComponent() {
+    public VideoComponent() {
         this(new AppSink("GstVideoComponent"));
     }
 
@@ -88,7 +88,7 @@ public class SimpleVideoComponent extends javax.swing.JComponent {
     /**
      * Creates a new instance of GstVideoComponent
      */
-    public SimpleVideoComponent(AppSink appsink) {
+    public VideoComponent(AppSink appsink) {
         this.videosink = appsink;
         videosink.set("emit-signals", true);
         AppSinkListener listener = new AppSinkListener();
@@ -245,7 +245,7 @@ public class SimpleVideoComponent extends javax.swing.JComponent {
 
         @Override
         public boolean isOpaque() {
-            return SimpleVideoComponent.this.isOpaque();
+            return VideoComponent.this.isOpaque();
         }
 
 
@@ -453,7 +453,6 @@ public class SimpleVideoComponent extends javax.swing.JComponent {
             int w = capsStruct.getInteger("width");
             int h = capsStruct.getInteger("height");
             Buffer buffer = sample.getBuffer();
-            System.out.println(buffer.getPresentationTimestamp().toNanos());
             ByteBuffer bb = buffer.map(false);
             if (bb != null) {
                 rgbFrame(false, w, h, bb.asIntBuffer());

@@ -17,7 +17,7 @@ import org.freedesktop.gstreamer.Pad;
 import org.freedesktop.gstreamer.Pipeline;
 import org.freedesktop.gstreamer.Structure;
 import org.freedesktop.gstreamer.elements.DecodeBin;
-import com.aveco.Gstreamer.playBin.SimpleVideoComponent;
+import com.aveco.Gstreamer.playBin.VideoComponent;
 
 /**
  * An example of playing audio/video files using a decodebin and manually linking
@@ -26,7 +26,7 @@ import com.aveco.Gstreamer.playBin.SimpleVideoComponent;
 public class DecodeBinPlayer {
     static final String name = "DecodeBinPlayer";
     static JFrame frame;
-    static SimpleVideoComponent videoComponent;
+    static VideoComponent videoComponent;
     static Pipeline pipe;
     
     public static void main(String[] args) {
@@ -107,7 +107,7 @@ public class DecodeBinPlayer {
             public void run() {
                 frame = new JFrame("DecodeBin Player");
 
-                videoComponent = new SimpleVideoComponent();
+                videoComponent = new VideoComponent();
                 videoComponent.setPreferredSize(new Dimension(640, 480));
 
                 frame.add(videoComponent, BorderLayout.CENTER);

@@ -1,34 +1,20 @@
 package com.aveco.Gstreamer;
 
-import java.awt.BorderLayout;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.freedesktop.gstreamer.Gst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.aveco.Gstreamer.ctrl.ITestControler;
 import com.aveco.Gstreamer.ctrl.TestControler;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrlImpl;
-import com.aveco.Gstreamer.gui.ButtonPanel;
-import com.aveco.Gstreamer.gui.CommandTextField;
+import com.aveco.Gstreamer.gui.GUI;
 import com.aveco.Gstreamer.gui.LogInfo;
-import com.aveco.Gstreamer.gui.MyGWindow;
 import com.aveco.Gstreamer.log.CreateLogger;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
-import com.aveco.Gstreamer.playBin.VideoPlayer;
-import com.aveco.Gstreamer.videoInfo.ParseVideoPlayBinFindEnd;
-import com.aveco.Gstreamer.videoInfo.ParseVideoPlayBinTag;
+import com.aveco.Gstreamer.playBin.VideoPlayer2;
 import com.aveco.Gstreamer.videoInfo.VideoInfo;
 import com.aveco.Gstreamer.videoInfo.VideoInfoImpl;
 
@@ -57,79 +43,40 @@ public class Main {
     private VideoInfo videoInfo;
     private ExecutorService executor;
     private VideoPlayerCtrl ctrlVideo;
+    private CommandBuffer commandBuffer;
+    private CommandLine commandLine;
+    private ITestControler testControler;
+    private VideoProcess videoProcces;
 
 
-    public Main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
+    public Main(String[] args) {
         new CreateLogger();
-        SwingUtilities.invokeAndWait(() -> logInfo = new LogInfo());
+        SwingUtilities.invokeLater(() -> logInfo = new LogInfo());
 
         logger.info("Begin of app for testing video.");
 
         logger.trace("Inicialize of Gsreamer");
         args = Gst.init("FirstAppGst", args);
-        executor = Executors.newSingleThreadExecutor();
+        executor = Executors.newFixedThreadPool(2);
 
-        CommandBuffer commandBuffer = new CommandBuffer();
+        commandBuffer = new CommandBuffer();
         videoInfo = new VideoInfoImpl();
+        videoPlayer = new VideoPlayer2();
 
-        Future<IVideoPlayer> futureVideo = executor.submit(new VideoPlayer(getURI()));
-        executor.execute(new ParseVideoPlayBinTag(getURI(), videoInfo));
-        executor.execute(new ParseVideoPlayBinFindEnd(getURI(), videoInfo));
+        testControler = new TestControler(videoPlayer, videoInfo);
+        ctrlVideo = new VideoPlayerCtrlImpl(videoPlayer, testControler, videoInfo, executor, commandBuffer);
+        commandLine = new CommandLine(ctrlVideo, commandBuffer);
 
-        try {
-            videoPlayer = futureVideo.get();
-            if (videoPlayer == null) {
-                throw new NullPointerException("Video player was null");
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        ctrlVideo = new VideoPlayerCtrlImpl(videoPlayer, new TestControler(videoPlayer, videoInfo), videoInfo);
-
-        executor.execute(new CommandLine(ctrlVideo, commandBuffer));
+        executor.execute(commandLine);
+        videoProcces = new VideoProcess(executor, videoPlayer, testControler, ctrlVideo);
 
         // start gui
-        SwingUtilities.invokeLater(() -> {
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.add(videoPlayer.getSimpleVideoCompoment(), BorderLayout.CENTER);
-            new MyGWindow(panel, logInfo, new CommandTextField(commandBuffer), new ButtonPanel(ctrlVideo));
-        });
-
-        executor.shutdown();
+        new GUI(videoPlayer, commandBuffer, ctrlVideo, logInfo, videoProcces);
 
     }
 
 
-    public URI getURI() {
-        URI uri = null;
-        try {
-            uri = this.getClass().getClassLoader().getResource(PATH).toURI();
-        } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return uri;
-    }
-
-
-    public File getFile(String path) throws FileNotFoundException {
-        File file = new File(path);
-        if (!file.exists()) {
-            throw new FileNotFoundException();
-        }
-        return file;
-    }
-
-
-    public URL getURL() {
-        URL url = null;
-        url = this.getClass().getClassLoader().getResource(PATH);
-        return url;
-    }
-
-
-    public static void main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
+    public static void main(String[] args) {
         new Main(args);
     }
 

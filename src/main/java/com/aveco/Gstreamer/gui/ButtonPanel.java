@@ -1,5 +1,7 @@
 package com.aveco.Gstreamer.gui;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import com.aveco.Gstreamer.action.AbstractCtrlAction;
@@ -20,10 +22,13 @@ import net.miginfocom.swing.MigLayout;
 public class ButtonPanel extends JPanel {
 
     private static final String migC = "growx,pushx";
+    private List<JButton> buttons;
 
 
-    public ButtonPanel(VideoPlayerCtrl videoCtrl) {
+    public ButtonPanel(JButton fileChooser, VideoPlayerCtrl videoCtrl) {
+        buttons = new ArrayList<>();
         setLayout(new MigLayout());
+        add(fileChooser, migC);
         add(createButton(new Start(videoCtrl)), migC);
         add(createButton(new RewindBack(videoCtrl)), migC);
         add(createButton(new StepBack(videoCtrl)), migC);
@@ -39,7 +44,15 @@ public class ButtonPanel extends JPanel {
     private JButton createButton(AbstractCtrlAction action) {
         JButton btn = new JButton(action);
         btn.setToolTipText(action.help());
+        buttons.add(btn);
         return btn;
+    }
+
+
+    public void setEnableBtn(boolean enable) {
+        for (JButton item : buttons) {
+            item.setEnabled(enable);
+        }
     }
 
 }

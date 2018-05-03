@@ -2,6 +2,8 @@ package com.aveco.Gstreamer.videoInfo;
 
 public enum VideoType {
 
-    NTSC,
-    PAL
+    NTSC_DROP,
+    PAL,
+    NTSC_NON_DROP
 }
+

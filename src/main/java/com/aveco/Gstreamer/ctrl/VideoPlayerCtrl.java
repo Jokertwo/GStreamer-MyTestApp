@@ -1,5 +1,8 @@
 package com.aveco.Gstreamer.ctrl;
 
+import com.aveco.Gstreamer.videoInfo.VideoInfo;
+
+
 public interface VideoPlayerCtrl {
 
     void actualFrame();
@@ -15,9 +18,6 @@ public interface VideoPlayerCtrl {
 
 
     void frameRate();
-    
-    
-    void videoInfo();
 
 
     void play();
@@ -48,6 +48,9 @@ public interface VideoPlayerCtrl {
 
 
     void seek(long number);
+
+
+    void setVideoInfo(VideoInfo videoInfo);
 
 
     void sleep(int value);

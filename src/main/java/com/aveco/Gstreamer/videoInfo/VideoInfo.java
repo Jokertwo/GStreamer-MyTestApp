@@ -29,6 +29,12 @@ public interface VideoInfo {
     long getVideoEnd(VideoType videoType);
 
 
+    void setStategy(StepStrategy strategy);
+
+
+    StepStrategy getStrategy();
+
+
     VideoType getVideoType();
 
 

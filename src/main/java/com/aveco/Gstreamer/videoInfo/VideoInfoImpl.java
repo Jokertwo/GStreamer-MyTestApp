@@ -20,6 +20,7 @@ public class VideoInfoImpl implements VideoInfo {
     private long videoEndPAL;
     private long videoEndNTSC;
     private VideoType videoType;
+    private StepStrategy strategy;
 
     private static final String aCodec = "audio-codec";
     private static final String dTime = "datetime";
@@ -184,8 +185,12 @@ public class VideoInfoImpl implements VideoInfo {
             if (trunc == 25) {
                 videoType = VideoType.PAL;
             } else if (trunc == 29) {
-                videoType = VideoType.NTSC;
-            } else {
+                videoType = VideoType.NTSC_DROP;
+            } else if (trunc == 30) {
+                videoType = VideoType.NTSC_NON_DROP;
+            }
+
+            else {
                 logger.error("Unknown format: " + frameRate);
             }
             this.frameRate = frameRate;
@@ -219,5 +224,19 @@ public class VideoInfoImpl implements VideoInfo {
         }
         return videoEndNTSC;
 
+    }
+
+
+    @Override
+    public void setStategy(StepStrategy strategy) {
+        // TODO Auto-generated method stub
+
+    }
+
+
+    @Override
+    public StepStrategy getStrategy() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

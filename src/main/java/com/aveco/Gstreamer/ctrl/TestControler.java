@@ -14,14 +14,12 @@ import org.freedesktop.gstreamer.Segment;
 import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.event.SeekEvent;
-import org.freedesktop.gstreamer.query.SeekingQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
-import com.aveco.Gstreamer.playBin.SimpleVideoComponent;
+import com.aveco.Gstreamer.playBin.VideoComponent;
 import com.aveco.Gstreamer.testRunnable.AbstractTest;
 import com.aveco.Gstreamer.testRunnable.PlayFrameTest;
-import com.aveco.Gstreamer.testRunnable.SteppingFrontBack;
 import com.aveco.Gstreamer.videoInfo.VideoInfo;
 
 
@@ -30,19 +28,18 @@ public class TestControler implements ITestControler {
     public static final Logger logger = LoggerFactory.getLogger(TestControler.class);
 
     private PlayBin playBin;
-    private SimpleVideoComponent vCmp;
+    private VideoComponent vCmp;
     private ExecutorService executor;
     private List<AbstractTest> tests;
-    private SeekingQuery q;
+
     private VideoInfo videoInfo;
 
 
     public TestControler(IVideoPlayer videoPlayer, VideoInfo videoInfo) {
         super();
         this.playBin = videoPlayer.getPlayBin();
-        this.vCmp = videoPlayer.getSimpleVideoCompoment();
+        this.vCmp = videoPlayer.getVideoCompoment();
         executor = Executors.newSingleThreadExecutor();
-        q = new SeekingQuery(Format.TIME);
         tests = new ArrayList<>();
         this.videoInfo = videoInfo;
     }
@@ -191,10 +188,7 @@ public class TestControler implements ITestControler {
 
     @Override
     public long getVideoEnd() {
-        if (playBin.query(q)) {
-            return q.getEnd();
-        }
-        return 0;
+        return videoInfo.getVideoEnd(videoInfo.getVideoType());
     }
 
 
@@ -318,6 +312,13 @@ public class TestControler implements ITestControler {
             // I know that this is really UGLY
         }
         normalizeWayToPlay(start, seg.getStopValue());
+    }
+
+
+    @Override
+    public void setVideoInfo(VideoInfo videoInfo) {
+        this.videoInfo = videoInfo;
+
     }
 
 }

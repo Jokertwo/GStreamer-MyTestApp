@@ -20,7 +20,7 @@ import com.aveco.Gstreamer.videoInfo.ParseVideoPlayBinTag;
 public class VideoPlayer implements Callable<IVideoPlayer>, IVideoPlayer {
 
     private static final Logger logger = LoggerFactory.getLogger(ParseVideoPlayBinTag.class);
-    private SimpleVideoComponent vCmp;
+    private VideoComponent vCmp;
     private PlayBin playBin;
     private URI uri;
 
@@ -40,7 +40,7 @@ public class VideoPlayer implements Callable<IVideoPlayer>, IVideoPlayer {
             
             logger.trace("PlayBin was created");
 
-            vCmp = new SimpleVideoComponent();
+            vCmp = new VideoComponent();
             logger.trace("SimpleVideoComponent was created");
 
             addListeners();
@@ -133,8 +133,15 @@ public class VideoPlayer implements Callable<IVideoPlayer>, IVideoPlayer {
 
 
     @Override
-    public SimpleVideoComponent getSimpleVideoCompoment() {
+    public VideoComponent getVideoCompoment() {
         return vCmp;
+    }
+
+
+    @Override
+    public void setUri(URI uri) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

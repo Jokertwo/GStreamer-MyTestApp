@@ -14,7 +14,7 @@
     </appender>
 
     <root level="ALL">
-
+        <appender-ref ref="STDOUT" />
         <appender-ref ref="textArea" />
     </root>
 

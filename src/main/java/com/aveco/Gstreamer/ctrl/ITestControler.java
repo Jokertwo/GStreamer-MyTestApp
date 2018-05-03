@@ -2,6 +2,7 @@ package com.aveco.Gstreamer.ctrl;
 
 import org.freedesktop.gstreamer.Buffer;
 import org.freedesktop.gstreamer.Sample;
+import com.aveco.Gstreamer.videoInfo.VideoInfo;
 
 
 public interface ITestControler {
@@ -19,6 +20,9 @@ public interface ITestControler {
 
 
     void stepBack(int count);
+    
+    
+    void setVideoInfo(VideoInfo videoInfo);
 
 
     void testAction();

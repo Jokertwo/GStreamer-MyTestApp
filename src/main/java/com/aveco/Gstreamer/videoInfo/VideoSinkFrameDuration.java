@@ -44,17 +44,15 @@ public class VideoSinkFrameDuration implements VideoSink {
             if (duration > 0) {
                 videoInfo.setFrameRate(sample.getCaps().getStructure(0).getFraction("framerate").toDouble());
                 if (!videoInfo.addDuration(duration)) {
-                    if (once) {
-                        Gst.getExecutor().execute(() -> {
-                            parseVideo.dispose();
-                        });
-                        once = false;
-                    }
-                    sample.dispose();
-                    return FlowReturn.OK;
+                    Gst.getExecutor().execute(() -> {
+                        parseVideo.dispose();
+                    });
                 }
+                oldValue = buffer.getPresentationTimestamp().toNanos();
+                sample.dispose();
+                return FlowReturn.OK;
             }
-            oldValue = buffer.getPresentationTimestamp().toNanos();
+
             sample.dispose();
             return FlowReturn.OK;
         }

@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ParseVideoPlayBinTag implements Runnable, ParseVideo {
+public class ParseVideoPlayBinTag implements ParseVideo {
 
     private static final Logger logger = LoggerFactory.getLogger(ParseVideoPlayBinTag.class);
     private URI uri;
@@ -26,11 +26,12 @@ public class ParseVideoPlayBinTag implements Runnable, ParseVideo {
         super();
         this.uri = uri;
         this.videoInfo = videoInfo;
+        run();
     }
 
 
-    @Override
-    public void run() {
+
+    public synchronized void run() {
         logger.info("Thread for get TAG -> start");
         if (Gst.isInitialized()) {
             playBin = new PlayBin("TagFinder");
@@ -51,10 +52,17 @@ public class ParseVideoPlayBinTag implements Runnable, ParseVideo {
             playBin.getBus().connect(asyn);
             sleep(200);
             playBin.setState(State.PAUSED);
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                logger.error("Interupt during wait on result", e);
+            }
         } else {
             logger.error("GStreamer is not inicialized");
+            
         }
         logger.info("Thread for get TAG -> end");
+        
     }
 
 
@@ -68,7 +76,8 @@ public class ParseVideoPlayBinTag implements Runnable, ParseVideo {
     }
 
 
-    public void dispose() {
+    public synchronized void dispose() {
+        notifyAll();
         playBin.setState(State.PAUSED);
         playBin.setState(State.NULL);
         playBin.dispose();

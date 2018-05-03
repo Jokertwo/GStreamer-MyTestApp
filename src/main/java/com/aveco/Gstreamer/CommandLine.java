@@ -37,6 +37,7 @@ public class CommandLine implements Runnable {
     private final String help = "man";
     private Map<String, Action> actions;
     private CommandBuffer buffer;
+    private boolean run = true;
 
 
     public CommandLine(VideoPlayerCtrl ctrl, CommandBuffer buffer) {
@@ -51,7 +52,7 @@ public class CommandLine implements Runnable {
         logger.info("Thread for command line begin run");
         Thread.currentThread().setName("Command-console");
         String commands;
-        while (true) {
+        while (run) {
             commands = buffer.getCommand();
 
             if (commands.trim().isEmpty()) {
@@ -62,6 +63,13 @@ public class CommandLine implements Runnable {
                 printHelp();
                 continue;
             }
+            
+            if(commands.equals("exit") || commands.equals("finish")){
+                run = false;
+                break;
+            }
+            
+            
             String[] splitCommand = commands.split(" ");
             // check command
             if (actions.containsKey(splitCommand[0])) {
@@ -75,6 +83,11 @@ public class CommandLine implements Runnable {
                 unknownCoomand(commands);
             }
         }
+        logger.info("Thread for command line was stoped");
+    }
+    
+    public void stop(){
+        run = false;
     }
 
 
