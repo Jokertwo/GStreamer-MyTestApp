@@ -188,7 +188,7 @@ public class TestControler implements ITestControler {
 
     @Override
     public long getVideoEnd() {
-        return videoInfo.getVideoEnd(videoInfo.getVideoType());
+        return videoInfo.getVideoEnd();
     }
 
 
@@ -267,15 +267,17 @@ public class TestControler implements ITestControler {
      * Play one frame forward
      */
     @Override
-    public void playFrameForward(int number) {
-        logger.debug("Play " + number + " frame/s forward");
-        Segment seg = playBin.querySegment();
+    public void playFrameForward(int count) {
+        logger.debug("Play " + count + " frame/s forward");
+        
+
         long start = getBuffer().getPresentationTimestamp().toNanos();
-        long stop = start + (getBuffer().getDuration().toNanos() * number) + 1;
+        long frame = videoInfo.getNumberOfFrame(start);
+        long stop = videoInfo.getPositionOfFrame(frame + count);
         SeekEvent event = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, start, SeekType.SET, stop);
         if (!playBin.sendEvent(event)) {
             stopTest();
-            logger.error("Error during play " + number + " frame/s");
+            logger.error("Error during play " + count + " frame/s");
         }
         playBin.play();
 
@@ -283,8 +285,7 @@ public class TestControler implements ITestControler {
             // wait for EOS
             // I know that this is really UGLY
         }
-        normalizeWayToPlay(stop, seg.getStopValue());
-
+        normalizeWayToPlay(stop, getVideoEnd());
     }
 
 
@@ -292,18 +293,18 @@ public class TestControler implements ITestControler {
      * Play one frame back
      */
     @Override
-    public void playFrameBack(int number) {
-        Segment seg = playBin.querySegment();
-        logger.debug("Play " + number + " frame/s back");
+    public void playFrameBack(int count) {
+        logger.debug("Play " + count + " frame/s back");
 
-        long end = getBuffer().getPresentationTimestamp().toNanos();
-        long start = getBuffer().getPresentationTimestamp().toNanos()
-                - (getBuffer().getDuration().toNanos() * number) - 1;
+        long start = getBuffer().getPresentationTimestamp().toNanos();
+        long frame = videoInfo.getNumberOfFrame(start);
+        long stop = videoInfo.getPositionOfFrame(frame - count > 0 ? frame - count : 0);
+        
 
-        SeekEvent step = new SeekEvent(-1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, start, SeekType.SET, end);
+        SeekEvent step = new SeekEvent(-1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, stop, SeekType.SET, start);
         if (!playBin.sendEvent(step)) {
             stopTest();
-            logger.error("Error during play " + number + " frame/s");
+            logger.error("Error during play " + count + " frame/s");
         }
         playBin.play();
 
@@ -311,7 +312,7 @@ public class TestControler implements ITestControler {
             // wait for EOS
             // I know that this is really UGLY
         }
-        normalizeWayToPlay(start, seg.getStopValue());
+        normalizeWayToPlay(stop, getVideoEnd());
     }
 
 

@@ -38,7 +38,7 @@ public class ButtonPanel extends JPanel {
         add(createButton(new StepForward(videoCtrl,commandBuffer)), migC);
         add(createButton(new RewindFront(videoCtrl,commandBuffer)), migC);
         add(createButton(new End(videoCtrl,commandBuffer)), migC);
-        add(createButton(new Exit(videoCtrl,commandBuffer)), migC);
+        add(createButton(new Exit(videoCtrl,commandBuffer)), migC + ",wrap");
     }
 
 

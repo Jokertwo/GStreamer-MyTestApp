@@ -8,6 +8,9 @@ public interface VideoInfo {
     boolean addDuration(long duration);
 
 
+    boolean setDuration();
+
+
     long getNumberOfFrame(long timeStamp);
 
 
@@ -26,7 +29,7 @@ public interface VideoInfo {
     void setVideoEnd(long videoEnd);
 
 
-    long getVideoEnd(VideoType videoType);
+    long getVideoEnd();
 
 
     void setStategy(StepStrategy strategy);

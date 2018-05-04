@@ -4,10 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileFilter;
@@ -29,6 +31,8 @@ public class GUI {
     private JPanel rootPanel;
     private VideoProcess procces;
     private JFrame window;
+
+    public static Timer timer;
 
     private static final String videoS = "video";
     private static final String proccesS = "process";
@@ -66,7 +70,7 @@ public class GUI {
             rootPanel.add(new Proccesing(), proccesS);
             cl.show(rootPanel, videoS);
 
-            window = new MyGWindow(rootPanel, logInfo, new CommandTextField(commandBuffer), buttonPanel);
+            window = new MyGWindow(rootPanel, logInfo, new CommandTextField(commandBuffer), buttonPanel, slider());
         });
     }
 
@@ -86,6 +90,35 @@ public class GUI {
             }
         });
         return fileChooserBtn;
+    }
+
+
+    private JSlider slider() {
+        // position slider
+        JSlider position = new JSlider(0, 1000);
+        position.addChangeListener(e -> {
+            if (position.getValueIsAdjusting()) {
+                long dur = videoPlayer.getPlayBin().queryDuration(TimeUnit.NANOSECONDS);
+                if (dur > 0) {
+                    double relPos = position.getValue() / 1000.0;
+                    videoPlayer.getPlayBin().seek((long) (relPos * dur), TimeUnit.NANOSECONDS);
+                }
+            }
+        });
+        // sync slider position to video when not dragging
+        timer = new Timer(50, e -> {
+            if (!position.getValueIsAdjusting()) {
+                long dur = videoPlayer.getPlayBin().queryDuration(TimeUnit.NANOSECONDS);
+                long pos = videoPlayer.getPlayBin().queryPosition(TimeUnit.NANOSECONDS);
+                if (dur > 0) {
+                    double relPos = (double) pos / dur;
+                    position.setValue((int) (relPos * 1000));
+                }
+            }
+        });
+        timer.start();
+        position.setValue(0);
+        return position;
     }
 
 

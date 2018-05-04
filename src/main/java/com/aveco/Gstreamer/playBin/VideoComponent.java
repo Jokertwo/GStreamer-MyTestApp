@@ -78,7 +78,7 @@ public class VideoComponent extends javax.swing.JComponent {
     public VideoComponent() {
         this(new AppSink("GstVideoComponent"));
     }
-
+   
 
     public AppSink getAppSink() {
         return videosink;

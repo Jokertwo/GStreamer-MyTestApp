@@ -6,6 +6,7 @@ import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.GstObject;
 import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.TagList;
+import org.freedesktop.gstreamer.Bus.ERROR;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,9 @@ public class ParseVideoPlayBinTag implements ParseVideo {
             logger.info("Start find frame duration");
             videoSink = new VideoSinkFrameDuration(this, videoInfo);
             playBin.setVideoSink(videoSink.getElement());
+            
+            //connect error listener
+            error();
 
             tag = (GstObject source, TagList tagList) -> videoInfo.parse(tagList);
             asyn = (GstObject source) -> {
@@ -49,7 +53,6 @@ public class ParseVideoPlayBinTag implements ParseVideo {
 
             playBin.getBus().connect(tag);
             playBin.getBus().connect(asyn);
-            sleep(200, logger);
             playBin.setState(State.PAUSED);
             try {
                 wait();
@@ -62,6 +65,19 @@ public class ParseVideoPlayBinTag implements ParseVideo {
         }
         logger.info("Thread for get TAG -> end");
 
+    }
+    
+    private void error(){
+        playBin.getBus().connect(new ERROR() {
+
+            @Override
+            public void errorMessage(GstObject source, int code, String message) {
+                logger.error("GstObject: " + source);
+                logger.error("Error code: " + code);
+                logger.error("Message: " + message);
+                dispose();
+            }
+        });
     }
 
 

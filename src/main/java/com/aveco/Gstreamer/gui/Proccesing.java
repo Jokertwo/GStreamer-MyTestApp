@@ -19,6 +19,7 @@ public class Proccesing extends JPanel {
         JLabel label = new JLabel(PROCCES);
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+        label.setForeground(Color.GRAY);
         add(label, BorderLayout.CENTER);
     }
 }

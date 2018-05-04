@@ -1,5 +1,6 @@
 package com.aveco.Gstreamer.videoInfo;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,9 +20,24 @@ public class FrameTool implements IFrameTool {
         return false;
     }
 
+    @Override
+    public boolean setDuration(VideoType videoType, StepStrategy stepStrategy) {
+        if (stepStrategy == StepStrategy.FROM_0 && videoType == VideoType.NTSC_DROP) {
+            frameDuration = new LinkedList<>(Arrays.asList(33366667L, 33366667L, 33366665L));
+            return true;
+        } else if (stepStrategy == StepStrategy.NON_ZERO && videoType == VideoType.NTSC_DROP) {
+            frameDuration = new LinkedList<>(Arrays.asList(33366666L, 33366667L, 33366667L));
+            return true;
+        } else if (videoType == VideoType.PAL) {
+            frameDuration = new LinkedList<>(Arrays.asList(40000000L, 40000000L, 40000000L));
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
-    public long getNumberOfFrame(long timeStamp, VideoType videoType) {
+    public long getNumberOfFrame(long timeStamp, StepStrategy strategy) {
 
         long tempTimeStamp = 0;
         long frame = 0;
@@ -33,12 +49,10 @@ public class FrameTool implements IFrameTool {
             tempTimeStamp = tempTimeStamp + frameDuration.get(i % frameDuration.size());
             newFrame++;
             if (tempTimeStamp >= timeStamp) {
-                switch (videoType) {
-                    case PAL:
+                switch (strategy) {
+                    case FROM_0:
                         return newFrame;
-                    case NTSC_DROP:
-                        return oldFrame;
-                    case NTSC_NON_DROP:
+                    case NON_ZERO:
                         return oldFrame;
                     default:
                         return -1;
@@ -52,7 +66,7 @@ public class FrameTool implements IFrameTool {
 
 
     @Override
-    public long getPositionOfFrame(long frame, VideoType videoType) {
+    public long getPositionOfFrame(long frame, StepStrategy strategy) {
         long newPosition = 0;
         if (frame == 0) {
             return newPosition;
@@ -82,10 +96,10 @@ public class FrameTool implements IFrameTool {
 
     @Override
     public void printDur() {
-        for(long item : frameDuration){
+        for (long item : frameDuration) {
             System.out.println(item);
         }
-        
+
     }
 
 }

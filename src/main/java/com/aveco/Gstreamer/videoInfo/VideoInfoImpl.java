@@ -17,8 +17,8 @@ public class VideoInfoImpl implements VideoInfo {
     private String languageCode;
     private String bitRate;
     private double frameRate = 0;
-    private long videoEndPAL;
-    private long videoEndNTSC;
+    private long videoEndFromZero;
+    private long videoEndNotFormZero;
     private VideoType videoType;
     private StepStrategy strategy;
 
@@ -45,13 +45,13 @@ public class VideoInfoImpl implements VideoInfo {
 
     @Override
     public long getNumberOfFrame(long timeStamp) {
-        return frameTool.getNumberOfFrame(timeStamp, videoType);
+        return frameTool.getNumberOfFrame(timeStamp, strategy);
     }
 
 
     @Override
     public long getPositionOfFrame(long frame) {
-        return frameTool.getPositionOfFrame(frame, videoType);
+        return frameTool.getPositionOfFrame(frame, strategy);
     }
 
 
@@ -211,31 +211,36 @@ public class VideoInfoImpl implements VideoInfo {
 
     @Override
     public void setVideoEnd(long videoEnd) {
-        videoEndNTSC = videoEndPAL;
-        videoEndPAL = videoEnd;
+        videoEndNotFormZero = videoEndFromZero;
+        videoEndFromZero = videoEnd;
     }
 
 
     @Override
-    public long getVideoEnd(VideoType videoType) {
-        if (videoType == VideoType.PAL) {
-            return videoEndPAL;
+    public long getVideoEnd() {
+        if (strategy == StepStrategy.FROM_0) {
+            return videoEndFromZero;
         }
-        return videoEndNTSC;
+        return videoEndNotFormZero;
 
     }
 
 
     @Override
     public void setStategy(StepStrategy strategy) {
-        // TODO Auto-generated method stub
+        this.strategy = strategy;
 
     }
 
 
     @Override
     public StepStrategy getStrategy() {
-        // TODO Auto-generated method stub
-        return null;
+        return strategy;
+    }
+
+
+    @Override
+    public boolean setDuration() {
+        return frameTool.setDuration(videoType, strategy);
     }
 }

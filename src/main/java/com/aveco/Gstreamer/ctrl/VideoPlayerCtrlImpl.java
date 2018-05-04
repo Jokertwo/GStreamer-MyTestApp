@@ -14,6 +14,7 @@ import org.freedesktop.gstreamer.event.SeekEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.aveco.Gstreamer.CommandBuffer;
+import com.aveco.Gstreamer.gui.GUI;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
 import com.aveco.Gstreamer.videoInfo.VideoInfo;
 
@@ -66,7 +67,7 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
     @Override
     public void rewindToEnd() {
-        seek(videoInfo.getVideoEnd(videoInfo.getVideoType()));
+        seek(videoInfo.getVideoEnd());
 //        pb2.seek(videoInfo.getVideoEnd(videoInfo.getVideoType()), TimeUnit.NANOSECONDS);
         logger.debug("Video was rewind to end");
     }
@@ -144,6 +145,7 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
     @Override
     public void exit() {
         logger.info("App will be close");
+        GUI.timer.stop();
         shutDownExecutor();
         testCtrl.shotDown();
         pb2.setState(State.NULL);

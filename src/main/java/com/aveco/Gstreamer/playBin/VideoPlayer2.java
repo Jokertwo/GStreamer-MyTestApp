@@ -1,10 +1,17 @@
 package com.aveco.Gstreamer.playBin;
 
 import java.net.URI;
+import java.util.Arrays;
 import org.freedesktop.gstreamer.Bus.EOS;
 import org.freedesktop.gstreamer.Bus.ERROR;
+import org.freedesktop.gstreamer.Bus;
+import org.freedesktop.gstreamer.Element;
+import org.freedesktop.gstreamer.ElementFactory;
 import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.GstObject;
+import org.freedesktop.gstreamer.Message;
+import org.freedesktop.gstreamer.MessageType;
+import org.freedesktop.gstreamer.Structure;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,14 +64,12 @@ public class VideoPlayer2 implements IVideoPlayer {
 
     @Override
     public PlayBin getPlayBin() {
-        // TODO Auto-generated method stub
         return playBin;
     }
 
 
     @Override
     public VideoComponent getVideoCompoment() {
-        // TODO Auto-generated method stub
         return vComponent;
     }
 
@@ -74,7 +79,6 @@ public class VideoPlayer2 implements IVideoPlayer {
         playBin.stop();
         playBin.setURI(uri);
         playBin.pause();
-
     }
 
 }
