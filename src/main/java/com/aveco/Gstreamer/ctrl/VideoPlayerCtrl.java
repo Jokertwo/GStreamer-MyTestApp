@@ -74,6 +74,4 @@ public interface VideoPlayerCtrl {
     void timeCode();
 
 
-    void timeStamp();
-
 }

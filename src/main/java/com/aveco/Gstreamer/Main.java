@@ -66,7 +66,8 @@ public class Main {
         videoPlayer = new VideoPlayer2();
 
         testControler = new TestControler(videoPlayer, videoInfo);
-        ctrlVideo = new VideoPlayerCtrlImpl(videoPlayer, testControler, videoInfo, executor, commandBuffer);
+        ctrlVideo = new VideoPlayerCtrlImpl(videoPlayer, testControler, videoInfo, executor);
+        testControler.setVideoPlayerCtrl(ctrlVideo);
         commandLine = new CommandLine(ctrlVideo, commandBuffer);
 
         executor.execute(commandLine);

@@ -1,69 +1,59 @@
 package com.aveco.Gstreamer.ctrl;
 
-import org.freedesktop.gstreamer.Buffer;
-import org.freedesktop.gstreamer.Sample;
 import com.aveco.Gstreamer.videoInfo.VideoInfo;
 
 
 public interface ITestControler {
 
+    /**
+     * Start tests
+     */
     void runTests();
 
 
+    /**
+     * End all tests
+     */
     void stopTest();
 
 
+    /**
+     * shutdown executor for test
+     */
     void shotDown();
 
 
-    void stepForward(int count);
+    /**
+     * Returns VideoInfo with information about video
+     * 
+     * @return
+     */
+    VideoInfo getVideoInfo();
 
 
-    void stepBack(int count);
-    
-    
+    /**
+     * Returns video controller with methods for control video
+     * 
+     * @return
+     */
+    VideoPlayerCtrl getVideoPlayerCtrl();
+
+
+    /**
+     * Set videoInfo with information about video
+     * 
+     * @param videoInfo
+     *            VideoInfo
+     */
     void setVideoInfo(VideoInfo videoInfo);
 
 
-    void testAction();
-
-
-    void playFrameForward(int number);
-
-
-    void playFrameBack(int number);
-
-
-    String frameRate();
-
-
-    String getDuration();
-
-
-    String getActualFrame();
-
-
-    String timeForOneFrame();
-
-
-    String timeCode();
-
-
-    String actualTimeT();
-
-
-    String presentationTimeStemp();
-
-
-    String queryDuration();
-
-
-    long getVideoEnd();
-
-
-    Buffer getBuffer();
-
-
-    Sample getSample();
+    /**
+     * Set video controller with methods for control video
+     * 
+     * @param videoPlayerCtrl
+     *            VideoPlayerCtrl
+     */
+    void setVideoPlayerCtrl(VideoPlayerCtrl videoPlayerCtrl);
 
 }

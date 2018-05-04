@@ -2,13 +2,13 @@ package com.aveco.Gstreamer.videoInfo;
 
 import java.net.URI;
 import org.freedesktop.gstreamer.Bus;
+import org.freedesktop.gstreamer.Bus.ERROR;
 import org.freedesktop.gstreamer.Format;
 import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.GstObject;
 import org.freedesktop.gstreamer.SeekFlags;
 import org.freedesktop.gstreamer.SeekType;
 import org.freedesktop.gstreamer.State;
-import org.freedesktop.gstreamer.Bus.ERROR;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.event.SeekEvent;
 import org.slf4j.Logger;
@@ -36,21 +36,21 @@ public class ParseVideoPlayBinFindEnd implements ParseVideo {
 
     public synchronized void run() {
         if (Gst.isInitialized()) {
-            
+            // timeout
             startTime = System.currentTimeMillis();
             logger.info("Start find begin and end of video");
-            
+
             playBin = new PlayBin("VideoEndFinder");
             playBin.setURI(uri);
             videoSink = new VideoSinkFindEnd(videoInfo);
             playBin.setVideoSink(videoSink.getElement());
-            
-            //connect error listener
+
+            // connect error listener
             error();
-            
+
             asyn = (GstObject source) -> {
                 long queryDuration;
-                //wait to duration from GStreamer, wait max 5 sec
+                // wait to duration from GStreamer, wait max 5 sec
                 while (true) {
                     queryDuration = playBin.queryDuration().toNanos();
                     if (queryDuration > 0 || System.currentTimeMillis() - startTime > 5000) {
@@ -86,6 +86,9 @@ public class ParseVideoPlayBinFindEnd implements ParseVideo {
     }
 
 
+    /**
+     * Error listener
+     */
     private void error() {
         playBin.getBus().connect(new ERROR() {
 
@@ -100,6 +103,9 @@ public class ParseVideoPlayBinFindEnd implements ParseVideo {
     }
 
 
+    /**
+     * cleaner
+     */
     @Override
     public synchronized void dispose() {
         notifyAll();

@@ -15,6 +15,7 @@ public class PlayFrameTest extends AbstractTest {
     private static final String PLAY_FRAME = "PlayFrameTest";
     public static final Logger logger = LoggerFactory.getLogger(SteppingFrontBack.class);
 
+
     public PlayFrameTest(ITestControler tCtrl, PlayBin playBin, JComponent panel) {
         super(tCtrl, playBin, panel);
     }
@@ -34,14 +35,14 @@ public class PlayFrameTest extends AbstractTest {
             saveImage(PLAY_FRAME, SteppingFrontBack.class.getName(), getPanel(), getValues(i));
             for (int j = 0; j < 50; j++) {
                 sleep(200);
-                gettCtrl().playFrameForward(1);
+                getCtrl().getVideoPlayerCtrl().playFrameFront(1);
                 if (!isRunnig()) {
                     break;
                 }
             }
             for (int j = 0; j < 50; j++) {
                 sleep(200);
-                gettCtrl().stepBack(1);
+                getCtrl().getVideoPlayerCtrl().stepBack(1);
                 if (!isRunnig()) {
                     break;
                 }
@@ -58,7 +59,6 @@ public class PlayFrameTest extends AbstractTest {
     private List<Pair> getValues(int value) {
         List<Pair> values = new LinkedList<Pair>();
         values.add(new Pair("Iteration number " + value, Color.BLACK));
-        values.add(new Pair(gettCtrl().presentationTimeStemp().toString(), Color.BLACK));
         return values;
     }
 

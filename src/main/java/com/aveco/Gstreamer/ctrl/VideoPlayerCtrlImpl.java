@@ -6,6 +6,7 @@ import org.freedesktop.gstreamer.Buffer;
 import org.freedesktop.gstreamer.ClockTime;
 import org.freedesktop.gstreamer.Format;
 import org.freedesktop.gstreamer.Gst;
+import org.freedesktop.gstreamer.Sample;
 import org.freedesktop.gstreamer.SeekFlags;
 import org.freedesktop.gstreamer.SeekType;
 import org.freedesktop.gstreamer.State;
@@ -13,54 +14,53 @@ import org.freedesktop.gstreamer.elements.PlayBin;
 import org.freedesktop.gstreamer.event.SeekEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aveco.Gstreamer.CommandBuffer;
 import com.aveco.Gstreamer.gui.GUI;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
+import com.aveco.Gstreamer.playBin.VideoComponent;
 import com.aveco.Gstreamer.videoInfo.VideoInfo;
 
 
 public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
     public static final Logger logger = LoggerFactory.getLogger(VideoPlayerCtrlImpl.class);
 
-    private PlayBin pb2;
+    private PlayBin playBin;
     private long sec = 1000000000;
     private ITestControler testCtrl;
     private VideoInfo videoInfo;
     private ExecutorService executor;
-    private CommandBuffer buffer;
+    private VideoComponent videoComponent;
 
 
     public VideoPlayerCtrlImpl(IVideoPlayer videoPlayer,
                                ITestControler testCtrl,
                                VideoInfo videoInfo,
-                               ExecutorService executor,
-                               CommandBuffer buffer) {
+                               ExecutorService executor) {
         super();
-        this.pb2 = videoPlayer.getPlayBin();
+        this.playBin = videoPlayer.getPlayBin();
+        this.videoComponent = videoPlayer.getVideoCompoment();
         this.testCtrl = testCtrl;
         this.videoInfo = videoInfo;
         this.executor = executor;
-        this.buffer = buffer;
     }
 
 
     @Override
     public void play() {
-        pb2.play();
+        playBin.play();
         logger.debug("Play video.");
     }
 
 
     @Override
     public void pause() {
-        pb2.pause();
+        playBin.pause();
         logger.debug("Pause video");
     }
 
 
     @Override
     public void rewindToStart() {
-        pb2.seek(ClockTime.ZERO);
+        playBin.seek(ClockTime.ZERO);
         logger.debug("Video was rewind to begin");
     }
 
@@ -75,51 +75,49 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
     @Override
     public void rewindOneBack(int number) {
-        pb2.seek(pb2.queryPosition(Format.TIME) - (sec * number), TimeUnit.NANOSECONDS);
+        playBin.seek(playBin.queryPosition(Format.TIME) - (sec * number), TimeUnit.NANOSECONDS);
         logger.debug("Video was rewind one sec back");
     }
 
 
     @Override
     public void rewindFront(int number) {
-        pb2.seek(pb2.queryPosition(Format.TIME) + (sec * number), TimeUnit.NANOSECONDS);
+        playBin.seek(playBin.queryPosition(Format.TIME) + (sec * number), TimeUnit.NANOSECONDS);
         logger.debug("Video was rewind one sec forward");
     }
 
 
     @Override
     public void time() {
-        logger.info("Query Position 'buffer' > " + pb2.queryPosition(Format.BUFFERS));
-        logger.info("Query Position 'default' > " + pb2.queryPosition(Format.DEFAULT));
-        logger.info("Query Position 'percent' > " + pb2.queryPosition(Format.PERCENT));
-        logger.info("Query Position 'time' > " + pb2.queryPosition(Format.TIME));
-        logger.info("Query Duration 'time' > " + pb2.queryDuration(Format.TIME));
+        logger.info("Query Position 'buffer' > " + playBin.queryPosition(Format.BUFFERS));
+        logger.info("Query Position 'default' > " + playBin.queryPosition(Format.DEFAULT));
+        logger.info("Query Position 'percent' > " + playBin.queryPosition(Format.PERCENT));
+        logger.info("Query Position 'time' > " + playBin.queryPosition(Format.TIME));
+        logger.info("Query Duration 'time' > " + playBin.queryDuration(Format.TIME));
     }
 
 
     @Override
     public void state() {
-        logger.info("State: " + pb2.getState());
+        logger.info("State: " + playBin.getState());
     }
 
 
     @Override
     public void frameRate() {
-        testCtrl.frameRate();
+        videoInfo.getFrameRate();
     }
 
 
     @Override
     public void actualFrame() {
-
-        logger.info(videoInfo.getNumberOfFrame(testCtrl.getBuffer().getPresentationTimestamp().toNanos()) + "");
-//        testCtrl.getActualFrame();
+        logger.info(videoInfo.getNumberOfFrame(getBuffer().getPresentationTimestamp().toNanos()) + "");
     }
 
 
     @Override
     public void timeCode() {
-        testCtrl.timeCode();
+        logger.warn("Unimplemted methods!!!");
     }
 
 
@@ -148,8 +146,8 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
         GUI.timer.stop();
         shutDownExecutor();
         testCtrl.shotDown();
-        pb2.setState(State.NULL);
-        pb2.dispose();
+        playBin.setState(State.NULL);
+        playBin.dispose();
         Gst.deinit();
         System.exit(0);
     }
@@ -162,14 +160,8 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
 
     @Override
-    public void timeStamp() {
-        logger.error("Not inmplemented method!!!");
-    }
-
-
-    @Override
     public void bufferInfo() {
-        Buffer buf = testCtrl.getBuffer();
+        Buffer buf = getBuffer();
         logger.debug("Buffer getDuration: \t" + buf.getDuration().toNanos());
         logger.debug("Buffer getDecodeTimestamp: \t" + buf.getDecodeTimestamp().toNanos());
         logger.debug("Buffer getPresentationTimestamp: \t" + buf.getPresentationTimestamp().toNanos());
@@ -180,13 +172,43 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
 
     @Override
-    public void stepForward(int number) {
-        testCtrl.stepForward(number);
+    public void stepForward(int count) {
+        logger.debug("Step " + count + " frame/s forward");
+
+        long positon = getBuffer().getPresentationTimestamp().toNanos();
+        long frame = videoInfo.getNumberOfFrame(positon);
+        long newPosition = videoInfo.getPositionOfFrame(frame + count);
+
+        logger.trace("New position: " + newPosition);
+        SeekEvent step = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, newPosition, SeekType.NONE,
+            -1);
+
+        if (!playBin.sendEvent(step)) {
+            stopTest();
+            logger.error("Error during step forward");
+        } else {
+            logger.trace("Step forward was succesfull");
+        }
     }
 
 
-    public void stepBack(int number) {
-        testCtrl.stepBack(number);
+    public void stepBack(int count) {
+        logger.debug("Step " + count + " frame/s back");
+
+        long positon = getBuffer().getPresentationTimestamp().toNanos();
+        long frame = videoInfo.getNumberOfFrame(positon);
+        long newPosition = videoInfo.getPositionOfFrame(frame - count > 0 ? frame - count : 0);
+
+        logger.trace("New position: " + newPosition);
+        SeekEvent step = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, newPosition, SeekType.NONE,
+            -1);
+
+        if (!playBin.sendEvent(step)) {
+            stopTest();
+            logger.error("Error during step back");
+        } else {
+            logger.trace("Step back was succesfull");
+        }
     };
 
 
@@ -197,15 +219,48 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
 
     @Override
-    public void playFrameFront(int number) {
-        testCtrl.playFrameForward(number);
+    public void playFrameFront(int count) {
+        logger.debug("Play " + count + " frame/s forward");
+
+        long start = getBuffer().getPresentationTimestamp().toNanos();
+        long frame = videoInfo.getNumberOfFrame(start);
+        long stop = videoInfo.getPositionOfFrame(frame + count);
+        SeekEvent event = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, start, SeekType.SET, stop);
+        if (!playBin.sendEvent(event)) {
+            stopTest();
+            logger.error("Error during play " + count + " frame/s");
+        }
+        playBin.play();
+
+        while (playBin.isPlaying()) {
+            // wait for EOS
+            // I know that this is really UGLY
+        }
+        normalizeWayToPlay(stop, videoInfo.getVideoEnd());
 
     }
 
 
     @Override
-    public void playFrameBack(int number) {
-        testCtrl.playFrameBack(number);
+    public void playFrameBack(int count) {
+        logger.debug("Play " + count + " frame/s back");
+
+        long start = getBuffer().getPresentationTimestamp().toNanos();
+        long frame = videoInfo.getNumberOfFrame(start);
+        long stop = videoInfo.getPositionOfFrame(frame - count > 0 ? frame - count : 0);
+
+        SeekEvent step = new SeekEvent(-1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, stop, SeekType.SET, start);
+        if (!playBin.sendEvent(step)) {
+            stopTest();
+            logger.error("Error during play " + count + " frame/s");
+        }
+        playBin.play();
+
+        while (playBin.isPlaying()) {
+            // wait for EOS
+            // I know that this is really UGLY
+        }
+        normalizeWayToPlay(stop, videoInfo.getVideoEnd());
     }
 
 
@@ -213,7 +268,7 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
     public void seek(long number) {
         logger.info("Seek to '" + number + "'");
         SeekEvent seek = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, number, SeekType.NONE, -1);
-        if (pb2.sendEvent(seek)) {
+        if (playBin.sendEvent(seek)) {
             logger.debug("Seek to '" + number + "' was successful");
         } else {
             logger.warn("Seek to '" + number + "' was unsuccessful");
@@ -228,16 +283,11 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
     }
 
 
-//    @Override
-//    public void seek(long number) {
-//        logger.info("Seek to '" + number + "'");
-//        if (pb2.seek(number, TimeUnit.NANOSECONDS)) {
-//            logger.debug("Seek to '" + number + "' was successful");
-//        } else {
-//            logger.warn("Seek to '" + number + "' was unsuccessful");
-//        }
-//    }
-
+    /////////////////////////////////////////////////// helper //////////////////////////////////////////////////
+    /////////////////////////////////////////////////// methods//////////////////////////////////////////////////
+    /**
+     * Executor shutdown
+     */
     private void shutDownExecutor() {
         try {
             logger.info("attempt to shutdown executor");
@@ -249,6 +299,52 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
             executor.shutdownNow();
             logger.info("shutdown finished");
         }
+    }
+
+
+    /**
+     * Returns Sample of current frame
+     * 
+     * @return
+     */
+    private Sample getSample() {
+        Sample sample = null;
+        if (!videoComponent.getAppSink().isEOS()) {
+            if (!playBin.getState().equals(State.PLAYING)) {
+                sample = videoComponent.getAppSink().pullPreroll();
+            }
+        } else {
+            logger.error("EOS exception");
+        }
+        return sample;
+    }
+
+
+    /**
+     * Return buffer of current frame
+     * 
+     * @return
+     */
+    private Buffer getBuffer() {
+        return getSample().getBuffer();
+    }
+
+
+    /**
+     * 
+     * @param startSegment
+     * @param stopSegment
+     * @return
+     */
+    private boolean normalizeWayToPlay(long startSegment, long stopSegment) {
+        SeekEvent step = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, startSegment, SeekType.SET,
+            stopSegment);
+        if (!playBin.sendEvent(step)) {
+            stopTest();
+            logger.error("Error during step back");
+            return false;
+        }
+        return true;
     }
 
 }

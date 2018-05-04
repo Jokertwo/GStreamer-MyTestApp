@@ -25,7 +25,7 @@ public abstract class AbstractTest implements Runnable {
     private JComponent panel;
 
 
-    public ITestControler gettCtrl() {
+    public ITestControler getCtrl() {
         return tCtrl;
     }
 

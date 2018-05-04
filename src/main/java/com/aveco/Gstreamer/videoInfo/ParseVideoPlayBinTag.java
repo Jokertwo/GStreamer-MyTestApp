@@ -66,7 +66,9 @@ public class ParseVideoPlayBinTag implements ParseVideo {
         logger.info("Thread for get TAG -> end");
 
     }
-    
+    /**
+     * Error listener
+     */
     private void error(){
         playBin.getBus().connect(new ERROR() {
 
@@ -80,7 +82,10 @@ public class ParseVideoPlayBinTag implements ParseVideo {
         });
     }
 
-
+    /**
+     * Cleaner
+     */
+    @Override
     public synchronized void dispose() {
         notifyAll();
         playBin.setState(State.PAUSED);
