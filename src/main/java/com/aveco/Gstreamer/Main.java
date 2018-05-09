@@ -8,6 +8,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.freedesktop.gstreamer.Gst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.aveco.Gstreamer.ctrl.GuiCtrl;
 import com.aveco.Gstreamer.ctrl.ITestControler;
 import com.aveco.Gstreamer.ctrl.TestControler;
 import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
@@ -17,8 +18,6 @@ import com.aveco.Gstreamer.gui.LogInfo;
 import com.aveco.Gstreamer.log.CreateLogger;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
 import com.aveco.Gstreamer.playBin.VideoPlayer2;
-import com.aveco.Gstreamer.videoInfo.VideoInfo;
-import com.aveco.Gstreamer.videoInfo.VideoInfoImpl;
 
 
 public class Main {
@@ -42,7 +41,6 @@ public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private LogInfo logInfo;
     private IVideoPlayer videoPlayer;
-    private VideoInfo videoInfo;
     private ExecutorService executor;
     private VideoPlayerCtrl ctrlVideo;
     private CommandBuffer commandBuffer;
@@ -62,20 +60,20 @@ public class Main {
         executor = Executors.newFixedThreadPool(2);
 
         commandBuffer = new CommandBuffer();
-        videoInfo = new VideoInfoImpl();
+
         videoPlayer = new VideoPlayer2();
 
-        testControler = new TestControler(videoPlayer, videoInfo);
-        ctrlVideo = new VideoPlayerCtrlImpl(videoPlayer, testControler, videoInfo, executor);
+        testControler = new TestControler(videoPlayer);
+        ctrlVideo = new VideoPlayerCtrlImpl(videoPlayer, testControler, executor);
         testControler.setVideoPlayerCtrl(ctrlVideo);
         commandLine = new CommandLine(ctrlVideo, commandBuffer);
 
         executor.execute(commandLine);
-        videoProcces = new VideoProcess(executor, videoPlayer, testControler, ctrlVideo);
+        videoProcces = new VideoProcess(executor, videoPlayer);
 
         // start gui
-        new GUI(videoPlayer, commandBuffer, ctrlVideo, logInfo, videoProcces);
-
+        GuiCtrl guiCtrl = new GUI(videoPlayer.getVideoCompoment(), commandBuffer, ctrlVideo, logInfo, videoProcces);
+        videoPlayer.setGuiCtrl(guiCtrl);
     }
 
 

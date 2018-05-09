@@ -26,15 +26,14 @@ public class ParseVideoPlayBinFindEnd implements ParseVideo {
     private long startTime;
 
 
-    public ParseVideoPlayBinFindEnd(URI uri, VideoInfo videoInfo) {
+    public ParseVideoPlayBinFindEnd(URI uri,VideoInfo videoInfo) {
         super();
         this.uri = uri;
         this.videoInfo = videoInfo;
-        run();
     }
 
 
-    public synchronized void run() {
+    public synchronized VideoInfo call() {
         if (Gst.isInitialized()) {
             // timeout
             startTime = System.currentTimeMillis();
@@ -73,16 +72,13 @@ public class ParseVideoPlayBinFindEnd implements ParseVideo {
             };
             playBin.getBus().connect(asyn);
             playBin.pause();
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                logger.error("Interupt during wait on result", e);
-            }
+            
+            wait(logger);
             logger.info("Find begin and end of video was done");
         } else {
             logger.error("GStreamer is not inicialized.");
         }
-
+        return videoInfo;
     }
 
 

@@ -1,11 +1,13 @@
-package com.aveco.Gstreamer.videoInfo;
+package com.aveco.Gstreamer.frame;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import com.aveco.Gstreamer.videoInfo.StepStrategy;
+import com.aveco.Gstreamer.videoInfo.VideoType;
 
 
-public class FrameTool implements IFrameTool {
+public class FrameToolImpl implements iFrameTool {
 
     private int max = 60;
     private List<Long> frameDuration = new LinkedList<>();

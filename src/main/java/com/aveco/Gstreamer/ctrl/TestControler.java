@@ -12,7 +12,6 @@ import com.aveco.Gstreamer.playBin.IVideoPlayer;
 import com.aveco.Gstreamer.playBin.VideoComponent;
 import com.aveco.Gstreamer.testRunnable.AbstractTest;
 import com.aveco.Gstreamer.testRunnable.PlayFrameTest;
-import com.aveco.Gstreamer.videoInfo.VideoInfo;
 
 
 public class TestControler implements ITestControler {
@@ -25,16 +24,13 @@ public class TestControler implements ITestControler {
     private List<AbstractTest> tests;
     private VideoPlayerCtrl videoPlayerCtrl;
 
-    private VideoInfo videoInfo;
 
-
-    public TestControler(IVideoPlayer videoPlayer, VideoInfo videoInfo) {
+    public TestControler(IVideoPlayer videoPlayer) {
         super();
         this.playBin = videoPlayer.getPlayBin();
         this.vCmp = videoPlayer.getVideoCompoment();
         executor = Executors.newSingleThreadExecutor();
         tests = new ArrayList<>();
-        this.videoInfo = videoInfo;
     }
 
 
@@ -71,13 +67,6 @@ public class TestControler implements ITestControler {
     }
 
 
-    @Override
-    public void setVideoInfo(VideoInfo videoInfo) {
-        this.videoInfo = videoInfo;
-
-    }
-
-
     private void shutDownExecutor() {
         try {
             logger.info("attempt to shutdown executor");
@@ -90,12 +79,6 @@ public class TestControler implements ITestControler {
             executor.shutdownNow();
             logger.info("shutdown finished");
         }
-    }
-
-
-    @Override
-    public VideoInfo getVideoInfo() {
-        return videoInfo;
     }
 
 

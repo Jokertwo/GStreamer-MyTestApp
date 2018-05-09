@@ -2,11 +2,11 @@ package com.aveco.Gstreamer.videoInfo;
 
 import java.net.URI;
 import org.freedesktop.gstreamer.Bus;
+import org.freedesktop.gstreamer.Bus.ERROR;
 import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.GstObject;
 import org.freedesktop.gstreamer.State;
 import org.freedesktop.gstreamer.TagList;
-import org.freedesktop.gstreamer.Bus.ERROR;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +27,10 @@ public class ParseVideoPlayBinTag implements ParseVideo {
         super();
         this.uri = uri;
         this.videoInfo = videoInfo;
-        run();
     }
 
 
-    public synchronized void run() {
+    public synchronized VideoInfo call() {
         logger.info("Thread for get TAG -> start");
         if (Gst.isInitialized()) {
             playBin = new PlayBin("TagFinder");
@@ -40,8 +39,8 @@ public class ParseVideoPlayBinTag implements ParseVideo {
             logger.info("Start find frame duration");
             videoSink = new VideoSinkFrameDuration(this, videoInfo);
             playBin.setVideoSink(videoSink.getElement());
-            
-            //connect error listener
+
+            // connect error listener
             error();
 
             tag = (GstObject source, TagList tagList) -> videoInfo.parse(tagList);
@@ -54,22 +53,21 @@ public class ParseVideoPlayBinTag implements ParseVideo {
             playBin.getBus().connect(tag);
             playBin.getBus().connect(asyn);
             playBin.setState(State.PAUSED);
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                logger.error("Interupt during wait on result", e);
-            }
+
+            wait(logger);
         } else {
             logger.error("GStreamer is not inicialized");
 
         }
         logger.info("Thread for get TAG -> end");
-
+        return videoInfo;
     }
+
+
     /**
      * Error listener
      */
-    private void error(){
+    private void error() {
         playBin.getBus().connect(new ERROR() {
 
             @Override
@@ -81,6 +79,7 @@ public class ParseVideoPlayBinTag implements ParseVideo {
             }
         });
     }
+
 
     /**
      * Cleaner

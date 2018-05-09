@@ -1,16 +1,15 @@
 package com.aveco.Gstreamer;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aveco.Gstreamer.ctrl.ITestControler;
-import com.aveco.Gstreamer.ctrl.VideoPlayerCtrl;
 import com.aveco.Gstreamer.playBin.IVideoPlayer;
 import com.aveco.Gstreamer.videoInfo.ParseVideoPlayBinFindEnd;
 import com.aveco.Gstreamer.videoInfo.ParseVideoPlayBinTag;
 import com.aveco.Gstreamer.videoInfo.VideoInfo;
-import com.aveco.Gstreamer.videoInfo.VideoInfoImpl;
 
 
 public class VideoProcess {
@@ -19,39 +18,31 @@ public class VideoProcess {
 
     private ExecutorService executor;
     private IVideoPlayer videoPlayer;
-    private ITestControler testControler;
-    private VideoPlayerCtrl playerCtrl;
 
 
     public VideoProcess(ExecutorService executor,
-                        IVideoPlayer videoPlayer,
-                        ITestControler testControler,
-                        VideoPlayerCtrl playerCtrl) {
+                        IVideoPlayer videoPlayer) {
         super();
         this.executor = executor;
         this.videoPlayer = videoPlayer;
-        this.testControler = testControler;
-        this.playerCtrl = playerCtrl;
     }
 
 
-    public void preprocess(URI uri) {
-        executor.execute(() -> {
-            logger.info("Video procesing start");
-            VideoInfo newInfo = getVideoInfo(uri);
-            videoPlayer.setUri(uri);
-            testControler.setVideoInfo(newInfo);
-            playerCtrl.setVideoInfo(newInfo);
-            logger.info("VideoProcesing was done");
-
-        });
-    }
-
-
-    private VideoInfo getVideoInfo(URI uri) {
-        VideoInfo videoInfo = new VideoInfoImpl();
-        new ParseVideoPlayBinTag(uri, videoInfo);
-        new ParseVideoPlayBinFindEnd(uri, videoInfo);
+    public VideoInfo preprocess(URI uri) {
+        VideoInfo videoInfo = new VideoInfo();
+        Future<VideoInfo> futureVideoInfoTag = executor.submit(new ParseVideoPlayBinTag(uri, videoInfo));
+        try {
+            videoInfo = futureVideoInfoTag.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        Future<VideoInfo> futureVideoInfoEnd = executor.submit(new ParseVideoPlayBinFindEnd(uri, videoInfo));
+        try {
+            videoInfo = futureVideoInfoEnd.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        videoPlayer.setUri(uri);
         return videoInfo;
     }
 

@@ -1,25 +1,20 @@
 package com.aveco.Gstreamer.playBin;
 
-import java.awt.EventQueue;
 import java.net.URI;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import org.freedesktop.gstreamer.Bus.EOS;
 import org.freedesktop.gstreamer.Bus.ERROR;
-import org.freedesktop.gstreamer.Bus;
 import org.freedesktop.gstreamer.Event;
 import org.freedesktop.gstreamer.Gst;
 import org.freedesktop.gstreamer.GstObject;
-import org.freedesktop.gstreamer.Message;
-import org.freedesktop.gstreamer.MessageType;
 import org.freedesktop.gstreamer.Pad;
 import org.freedesktop.gstreamer.Pad.EVENT_PROBE;
 import org.freedesktop.gstreamer.PadProbeReturn;
 import org.freedesktop.gstreamer.State;
-import org.freedesktop.gstreamer.Structure;
 import org.freedesktop.gstreamer.elements.PlayBin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.aveco.Gstreamer.ctrl.GuiCtrl;
 import com.aveco.Gstreamer.videoInfo.ParseVideoPlayBinTag;
 
 
@@ -148,6 +143,13 @@ public class VideoPlayer implements Callable<IVideoPlayer>, IVideoPlayer {
     public void setUri(URI uri) {
         // TODO Auto-generated method stub
 
+    }
+
+
+    @Override
+    public void setGuiCtrl(GuiCtrl guiCtrl) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

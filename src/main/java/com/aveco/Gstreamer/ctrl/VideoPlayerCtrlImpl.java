@@ -26,20 +26,18 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
     private PlayBin playBin;
     private long sec = 1000000000;
     private ITestControler testCtrl;
-    private VideoInfo videoInfo;
     private ExecutorService executor;
     private VideoComponent videoComponent;
+    private VideoInfo videoInfo;
 
 
     public VideoPlayerCtrlImpl(IVideoPlayer videoPlayer,
                                ITestControler testCtrl,
-                               VideoInfo videoInfo,
                                ExecutorService executor) {
         super();
         this.playBin = videoPlayer.getPlayBin();
         this.videoComponent = videoPlayer.getVideoCompoment();
         this.testCtrl = testCtrl;
-        this.videoInfo = videoInfo;
         this.executor = executor;
     }
 
@@ -177,7 +175,7 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
         long positon = getBuffer().getPresentationTimestamp().toNanos();
         long frame = videoInfo.getNumberOfFrame(positon);
-        long newPosition = videoInfo.getPositionOfFrame(frame + count);
+        long newPosition = videoInfo.getTimeStampOfFrame(frame + count);
 
         logger.trace("New position: " + newPosition);
         SeekEvent step = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, newPosition, SeekType.NONE,
@@ -197,7 +195,7 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
         long positon = getBuffer().getPresentationTimestamp().toNanos();
         long frame = videoInfo.getNumberOfFrame(positon);
-        long newPosition = videoInfo.getPositionOfFrame(frame - count > 0 ? frame - count : 0);
+        long newPosition = videoInfo.getTimeStampOfFrame(frame - count > 0 ? frame - count : 0);
 
         logger.trace("New position: " + newPosition);
         SeekEvent step = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, newPosition, SeekType.NONE,
@@ -214,7 +212,7 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
     @Override
     public void TestAction() {
-        logger.info(videoInfo.toString());
+        videoInfo.print();
     }
 
 
@@ -224,7 +222,7 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
         long start = getBuffer().getPresentationTimestamp().toNanos();
         long frame = videoInfo.getNumberOfFrame(start);
-        long stop = videoInfo.getPositionOfFrame(frame + count);
+        long stop = videoInfo.getTimeStampOfFrame(frame + count);
         SeekEvent event = new SeekEvent(1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, start, SeekType.SET, stop);
         if (!playBin.sendEvent(event)) {
             stopTest();
@@ -247,7 +245,7 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
 
         long start = getBuffer().getPresentationTimestamp().toNanos();
         long frame = videoInfo.getNumberOfFrame(start);
-        long stop = videoInfo.getPositionOfFrame(frame - count > 0 ? frame - count : 0);
+        long stop = videoInfo.getTimeStampOfFrame(frame - count > 0 ? frame - count : 0);
 
         SeekEvent step = new SeekEvent(-1.0, Format.TIME, SeekFlags.FLUSH, SeekType.SET, stop, SeekType.SET, start);
         if (!playBin.sendEvent(step)) {
@@ -273,13 +271,6 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
         } else {
             logger.warn("Seek to '" + number + "' was unsuccessful");
         }
-    }
-
-
-    @Override
-    public void setVideoInfo(VideoInfo videoInfo) {
-        this.videoInfo = videoInfo;
-
     }
 
 
@@ -345,6 +336,25 @@ public class VideoPlayerCtrlImpl implements VideoPlayerCtrl {
             return false;
         }
         return true;
+    }
+
+
+    @Override
+    public long getPostion() {
+        return playBin.queryPosition(Format.TIME);
+    }
+
+
+    @Override
+    public void setVolume(double volume) {
+        playBin.setVolume(volume);
+
+    }
+
+
+    @Override
+    public void setVideoInfo(VideoInfo videoInfo) {
+        this.videoInfo = videoInfo;
     }
 
 }

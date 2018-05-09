@@ -70,6 +70,7 @@ public class VideoComponent extends javax.swing.JComponent {
     private boolean frameRendered = false;
     private volatile boolean updatePending = false;
     private final boolean useVolatile;
+    private long old = 0;
 
 
     /**
@@ -453,6 +454,12 @@ public class VideoComponent extends javax.swing.JComponent {
             int w = capsStruct.getInteger("width");
             int h = capsStruct.getInteger("height");
             Buffer buffer = sample.getBuffer();
+            System.out.println(buffer.getPresentationTimestamp().toNanos());
+            if(buffer.getPresentationTimestamp().toNanos() - old == 33333334){
+                System.out.println(buffer.getPresentationTimestamp().toNanos() - old);
+            }
+            
+            old = buffer.getPresentationTimestamp().toNanos();
             ByteBuffer bb = buffer.map(false);
             if (bb != null) {
                 rgbFrame(false, w, h, bb.asIntBuffer());
@@ -470,6 +477,7 @@ public class VideoComponent extends javax.swing.JComponent {
             int w = capsStruct.getInteger("width");
             int h = capsStruct.getInteger("height");
             Buffer buffer = sample.getBuffer();
+            System.out.println(buffer.getPresentationTimestamp().toNanos());
             ByteBuffer bb = buffer.map(false);
             if (bb != null) {
                 rgbFrame(false, w, h, bb.asIntBuffer());

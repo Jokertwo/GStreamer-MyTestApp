@@ -1,6 +1,9 @@
-package com.aveco.Gstreamer.videoInfo;
+package com.aveco.Gstreamer.frame;
 
-public interface IFrameTool {
+import com.aveco.Gstreamer.videoInfo.StepStrategy;
+import com.aveco.Gstreamer.videoInfo.VideoType;
+
+public interface iFrameTool {
 
     boolean addDuration(long duration);
 
